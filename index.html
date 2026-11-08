@@ -580,9 +580,8 @@
                     window.currentUser = user;
                 });
                 
-                // CORRIGIDO: CAMINHO EXATO DO FIREBASE VISTO NA SUA IMAGEM
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'moto-molde-digital-default';
-                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
+                // CORRIGIDO: Usando a coleção raiz "products" direta para sincronizar perfeitamente com todos os usuários
+                const colRef = collection(db, 'products');
                 
                 onSnapshot(colRef, (snapshot) => {
                     const cloudProducts = [];
@@ -593,7 +592,7 @@
                         window.products = cloudProducts;
                     } else {
                         window.products.forEach(async (p) => {
-                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', String(p.id)), p);
+                            await setDoc(doc(db, 'products', String(p.id)), p);
                         });
                     }
                     initLocalFallback();
@@ -647,13 +646,12 @@
 
         window.triggerAdminAccess = function() {
             const pass = prompt("Digite a senha mestre do Administrador:");
-            // Garantimos que a senha padrão inicial seja 'admin123' caso não haja nenhuma salva
             const savedPass = localStorage.getItem('moto_admin_pass') || 'admin123';
             if (pass === savedPass) {
                 switchTab('admin');
                 showToast("Bem-vindo ao Painel Administrativo!");
             } else if (pass !== null) {
-                showToast("Senha incorreta! A senha padrão inicial é admin123");
+                showToast("Senha incorreta! A senha padrão é admin123");
             }
         }
 
@@ -836,8 +834,7 @@
 
             try {
                 if (db) {
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'moto-molde-digital-default';
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', targetId);
+                    const docRef = doc(db, 'products', targetId);
                     await setDoc(docRef, productData, { merge: true });
                     showToast("Molde salvo e sincronizado no Firebase com sucesso!");
                 }
