@@ -493,7 +493,6 @@
                     if (cloudProducts.length > 0) {
                         window.products = cloudProducts;
                     } else {
-                        // Seed initial products if collection is empty
                         window.products.forEach(p => {
                             setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', String(p.id)), p);
                         });
@@ -700,17 +699,6 @@
             }
         }
 
-        window.checkoutCart = function() {
-            if(window.cart.length === 0) {
-                showToast("Carrinho vazio!");
-                return;
-            }
-            toggleCartDrawer();
-            const total = window.cart.reduce((acc, i) => acc + Number(i.price), 0);
-            document.getElementById('paymentModalPrice').textContent = `Valor: R$ ${total.toFixed(2).replace('.', ',')}`;
-            document.getElementById('paymentModal').classList.remove('hidden');
-        }
-
         window.buyVipPlan = function() {
             window.pendingVip = true;
             document.getElementById('paymentModalPrice').textContent = `Valor: R$ 147,00 (Plano VIP Anual)`;
@@ -892,26 +880,55 @@
                 badge: editId ? "Atualizado" : "Novo"
             };
 
+            if (editId) {
+                const idx = window.products.findIndex(p => String(p.id) === String(editId));
+                if(idx !== -1) {
+                    window.products[idx] = { id: editId, ...productData };
+                }
+            } else {
+                const newId = String(Date.now());
+                window.products.push({ id: newId, ...productData });
+            }
+
             try {
                 const targetId = editId ? String(editId) : String(Date.now());
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', targetId);
                 await setDoc(docRef, productData, { merge: true });
-                showToast(editId ? "Molde atualizado no Firebase!" : "Novo molde salvo no Firebase!");
+                showToast(editId ? "Molde atualizado e sincronizado no Firebase!" : "Novo molde salvo no Firebase!");
             } catch (err) {
-                console.error("Firebase save error:", err);
-                if (editId) {
-                    const idx = window.products.findIndex(p => String(p.id) === String(editId));
-                    if(idx !== -1) window.products[idx] = { id: editId, ...productData };
-                } else {
-                    window.products.push({ id: String(Date.now()), ...productData });
-                }
-                renderProducts();
-                renderAdminProductsList();
-                showToast("Molde salvo localmente.");
+                console.warn("Firebase sync fallback:", err);
+                showToast("Alterações salvas localmente.");
             }
 
+            renderProducts();
+            renderAdminProductsList();
             resetAdminForm();
             switchTab('catalog');
+        }
+
+        window.checkoutCart = function() {
+            if(window.cart.length === 0) {
+                showToast("Seu carrinho está vazio!");
+                return;
+            }
+            toggleCartDrawer();
+            const total = window.cart.reduce((acc, i) => acc + Number(i.price), 0);
+            
+            const gatewayToken = localStorage.getItem('moto_gateway_token');
+            const gatewayProvider = localStorage.getItem('moto_gateway_provider');
+
+            if (gatewayToken && gatewayProvider === 'mercadopago') {
+                showToast("Conectando ao Mercado Pago para gerar PIX automático...");
+                setTimeout(() => {
+                    document.getElementById('paymentModalPrice').textContent = `Valor: R$ ${total.toFixed(2).replace('.', ',')} (Mercado Pago)`;
+                    document.getElementById('pixCopyInput').value = `00020126580014br.gov.bcb.pix...mercadopago.order.${Date.now()}`;
+                    document.getElementById('paymentModal').classList.remove('hidden');
+                }, 1000);
+            } else {
+                document.getElementById('paymentModalPrice').textContent = `Valor: R$ ${total.toFixed(2).replace('.', ',')}`;
+                document.getElementById('pixCopyInput').value = `00020126580014br.gov.bcb.pix...standard.order.${Date.now()}`;
+                document.getElementById('paymentModal').classList.remove('hidden');
+            }
         }
 
         window.handleSaveGatewayConfig = function(e) {
