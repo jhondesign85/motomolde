@@ -90,7 +90,7 @@
             </div>
         </section>
 
-        <!-- Área VIP Dashboard (Oculto por padrão até o usuário ativar o VIP) -->
+        <!-- Área VIP Dashboard -->
         <section id="vipDashboardSection" class="hidden">
             <div class="bg-gradient-to-r from-amber-950/60 via-zinc-900 to-zinc-900 border-2 border-amber-500 rounded-3xl p-8 mb-8 shadow-2xl">
                 <div class="flex items-center space-x-4 mb-6">
@@ -102,7 +102,7 @@
                         <h2 class="text-3xl font-black text-white mt-1">Painel de Downloads Ilimitados</h2>
                     </div>
                 </div>
-                <p class="text-zinc-300 text-sm mb-6">Parabéns! Como assinante VIP, você tem acesso liberado para baixar qualquer molde do sistema instantaneamente sem custos adicionais.</p>
+                <p class="text-zinc-300 text-sm mb-6">Parabéns! Como assinante VIP, você tem acesso liberado para baixar qualquer molde do sistema instantaneamente.</p>
                 <button onclick="showCatalog()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-6 py-3 rounded-xl text-xs transition-all shadow-lg">
                     <i class="fa-solid fa-arrow-left mr-2"></i> Ver Catálogo Completo com Downloads Libertos
                 </button>
@@ -154,9 +154,10 @@
                 </div>
             </div>
 
-            <!-- Adicionar Molde -->
+            <!-- Adicionar / Editar Molde -->
             <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 mb-8">
-                <h4 class="font-bold text-sm text-amber-400 mb-4"><i class="fa-solid fa-plus-circle mr-2"></i> Cadastrar Novo Molde</h4>
+                <h4 class="font-bold text-sm text-amber-400 mb-4" id="formTitleAction"><i class="fa-solid fa-plus-circle mr-2"></i> Cadastrar Novo Molde</h4>
+                <input type="hidden" id="editingMoldId" value="">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <input type="text" id="moldTitle" placeholder="Título (Ex: Kit Molde XRE 300)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
                     <input type="number" id="moldPrice" placeholder="Preço (Ex: 29.90)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
@@ -164,9 +165,12 @@
                     <input type="text" id="moldCategoryLabel" placeholder="Rótulo da Categoria (Ex: HONDA)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
                     <input type="text" id="moldImage" placeholder="URL da Imagem de Capa" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
                     <input type="text" id="moldDownloadUrl" placeholder="Link do Google Drive / Arquivo" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
-                    <input type="text" id="moldCheckoutUrl" placeholder="Link de Pagamento MP (Opcional)" class="md:col-span-2 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
+                    <input type="text" id="moldCheckoutUrl" placeholder="Link de Pagamento MP Específico (Opcional)" class="md:col-span-2 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
                 </div>
-                <button onclick="addNewMold()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition-all">Salvar e Sincronizar com Firebase</button>
+                <div class="flex space-x-2">
+                    <button onclick="saveMold()" id="saveMoldBtn" class="flex-1 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition-all">Salvar Molde no Firebase</button>
+                    <button onclick="resetMoldForm()" id="cancelEditBtn" class="hidden bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold px-4 py-3 rounded-xl text-xs transition-all">Cancelar</button>
+                </div>
             </div>
 
             <!-- Lista de Produtos Cadastrados -->
@@ -184,21 +188,18 @@
             <div class="bg-amber-500/10 text-amber-500 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
                 <i class="fa-solid fa-crown"></i>
             </div>
-            <h3 class="text-xl font-bold mb-1 text-white" id="modalTitlePayment">Checkout VIP Mercado Pago</h3>
-            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Efetue o pagamento para liberar sua Área VIP instantaneamente.</p>
+            <h3 class="text-xl font-bold mb-1 text-white" id="modalTitlePayment">Checkout Mercado Pago</h3>
+            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Efetue o pagamento seguro.</p>
             
             <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-800 mb-6">
-                <div class="text-xs text-zinc-400 mb-1">Valor da Assinatura Anual:</div>
+                <div class="text-xs text-zinc-400 mb-1">Valor do Item:</div>
                 <div class="text-2xl font-black text-amber-400" id="modalItemPriceDisplay">R$ 0,00</div>
             </div>
             
             <div class="space-y-3">
                 <button onclick="openGatewayCheckout()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3.5 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-bolt text-sm"></i>
-                    <span id="gatewayBtnText">Pagar Assinatura VIP</span>
-                </button>
-                <button onclick="simulateVipActivation()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl text-xs transition-all border border-zinc-700">
-                    <i class="fa-solid fa-check-circle mr-1 text-emerald-400"></i> Já paguei (Ativar Acesso VIP agora)
+                    <span id="gatewayBtnText">Pagar no Mercado Pago</span>
                 </button>
             </div>
         </div>
@@ -376,7 +377,6 @@
 
         function openVipModal() {
             if (isVipActive) {
-                // Se já for VIP, abre o painel VIP exclusivo
                 document.getElementById("catalogSection").classList.add("hidden");
                 document.getElementById("vipDashboardSection").classList.remove("hidden");
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -420,19 +420,6 @@
             } else {
                 alert("Configure o link de pagamento do Mercado Pago no painel administrativo.");
             }
-        }
-
-        function simulateVipActivation() {
-            isVipActive = true;
-            localStorage.setItem("motomolde_vip", "true");
-            closePixModal();
-            updateVipInterface();
-            alert("Parabéns! Pagamento confirmado. Sua Área VIP foi liberada com sucesso!");
-            
-            // Abre o painel VIP
-            document.getElementById("catalogSection").classList.add("hidden");
-            document.getElementById("vipDashboardSection").classList.remove("hidden");
-            renderProducts();
         }
 
         function openAdminLogin() {
@@ -484,7 +471,8 @@
                 .catch(err => alert("Erro ao salvar: " + err.message));
         }
 
-        function addNewMold() {
+        function saveMold() {
+            const editingId = document.getElementById("editingMoldId").value;
             const title = document.getElementById("moldTitle").value;
             const price = parseFloat(document.getElementById("moldPrice").value);
             const category = document.getElementById("moldCategory").value.toLowerCase();
@@ -497,21 +485,50 @@
                 return alert("Preencha todos os campos obrigatórios do molde.");
             }
 
-            const newId = Date.now().toString();
             const moldData = { title, price, category, categoryLabel, image, downloadUrl, checkoutUrl, badge: 'Novo' };
+            const moldId = editingId ? editingId : Date.now().toString();
 
-            db.collection("products").doc(newId).set(moldData)
+            db.collection("products").doc(moldId).set(moldData)
                 .then(() => {
-                    alert("Molde cadastrado e sincronizado com sucesso!");
-                    document.getElementById("moldTitle").value = "";
-                    document.getElementById("moldPrice").value = "";
-                    document.getElementById("moldCategory").value = "";
-                    document.getElementById("moldCategoryLabel").value = "";
-                    document.getElementById("moldImage").value = "";
-                    document.getElementById("moldDownloadUrl").value = "";
-                    document.getElementById("moldCheckoutUrl").value = "";
+                    alert(editingId ? "Molde atualizado com sucesso!" : "Molde cadastrado e sincronizado!");
+                    resetMoldForm();
                 })
                 .catch(err => alert("Erro ao salvar molde: " + err.message));
+        }
+
+        function editMold(id) {
+            const p = products.find(prod => prod.id === id);
+            if (!p) return;
+
+            document.getElementById("editingMoldId").value = p.id;
+            document.getElementById("moldTitle").value = p.title;
+            document.getElementById("moldPrice").value = p.price;
+            document.getElementById("moldCategory").value = p.category;
+            document.getElementById("moldCategoryLabel").value = p.categoryLabel || '';
+            document.getElementById("moldImage").value = p.image;
+            document.getElementById("moldDownloadUrl").value = p.downloadUrl;
+            document.getElementById("moldCheckoutUrl").value = p.checkoutUrl || '';
+
+            document.getElementById("formTitleAction").innerHTML = `<i class="fa-solid fa-pen-to-square mr-2"></i> Editando Molde: ${p.title}`;
+            document.getElementById("saveMoldBtn").innerText = "Atualizar Molde no Firebase";
+            document.getElementById("cancelEditBtn").classList.remove("hidden");
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetMoldForm() {
+            document.getElementById("editingMoldId").value = "";
+            document.getElementById("moldTitle").value = "";
+            document.getElementById("moldPrice").value = "";
+            document.getElementById("moldCategory").value = "";
+            document.getElementById("moldCategoryLabel").value = "";
+            document.getElementById("moldImage").value = "";
+            document.getElementById("moldDownloadUrl").value = "";
+            document.getElementById("moldCheckoutUrl").value = "";
+
+            document.getElementById("formTitleAction").innerHTML = `<i class="fa-solid fa-plus-circle mr-2"></i> Cadastrar Novo Molde`;
+            document.getElementById("saveMoldBtn").innerText = "Salvar Molde no Firebase";
+            document.getElementById("cancelEditBtn").classList.add("hidden");
         }
 
         function deleteMold(id) {
@@ -540,7 +557,10 @@
                                 <span class="text-[10px] text-amber-400">R$ ${Number(p.price).toFixed(2)} - ${p.categoryLabel || p.category}</span>
                             </div>
                         </div>
-                        <button onclick="deleteMold('${p.id}')" class="bg-red-500/15 hover:bg-red-500 text-red-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition-all"><i class="fa-solid fa-trash"></i></button>
+                        <div class="flex space-x-2">
+                            <button onclick="editMold('${p.id}')" class="bg-blue-500/15 hover:bg-blue-500 text-blue-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition-all" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteMold('${p.id}')" class="bg-red-500/15 hover:bg-red-500 text-red-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition-all" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                        </div>
                     </div>
                 `;
             });
