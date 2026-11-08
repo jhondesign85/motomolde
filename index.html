@@ -1,4 +1,3 @@
-<!-- ... निस -->
 <!DOCTYPE html>
 <html lang="pt-BR" class="dark">
 <head>
@@ -458,21 +457,24 @@
             window.addEventListener('keydown', (e) => {
                 if (e.ctrlKey && e.shiftKey && e.code === 'KeyA') {
                     e.preventDefault();
-                    const pass = prompt("Senha mestre admin:");
-                    if (pass === "admin123") switchTab('admin');
+                    triggerAdminAccess();
                 }
             });
 
-            // Check URL hash for admin access
+            // Check URL hash for admin access immediately on load
             if(window.location.hash === '#admin' || window.location.search.includes('admin')) {
-                const pass = prompt("Senha mestre admin:");
-                if (pass === "admin123") {
-                    switchTab('admin');
-                } else {
-                    window.location.hash = '';
-                }
+                triggerAdminAccess();
             }
         };
+
+        function triggerAdminAccess() {
+            const pass = prompt("Digite a senha mestre do painel admin:");
+            if (pass === "admin123") {
+                switchTab('admin');
+            } else if (pass !== null) {
+                showToast("Senha incorreta!");
+            }
+        }
 
         window.renderCategories = function() {
             const container = document.getElementById('categoryButtons');
@@ -784,7 +786,7 @@
                 title,
                 category: categoryId,
                 categoryLabel,
-                price,
+                    price,
                 image,
                 downloadUrl,
                 badge: editId ? "Atualizado" : "Novo"
@@ -802,7 +804,6 @@
                     showToast("Novo molde salvo!");
                 }
             } catch (err) {
-                // Local fallback update if offline or firestore rules block
                 if (editId) {
                     const idx = window.products.findIndex(p => String(p.id) === String(editId));
                     if(idx !== -1) window.products[idx] = { id: editId, ...productData };
