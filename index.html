@@ -1,398 +1,185 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moto Molde Digital - Vetores para Recorte Eletrônico (PDF & CDR)</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Moto Molde Digital - Vetores Profissionais para Motos</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        gold: { 400: '#FACC15', 500: '#EAB308', 600: '#CA8A04' },
-                        darkbg: '#0F0F12',
-                        cardbg: '#18181C',
-                        carbon: '#222228',
-                    },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0F0F12; color: #E4E4E7; overflow-x: hidden; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0F0F12; }
-        ::-webkit-scrollbar-thumb { background: #27272A; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #EAB308; }
-        .bg-carbon-pattern {
-            background-color: #121215;
-            background-image: radial-gradient(#27272a 1px, transparent 1px), radial-gradient(#27272a 1px, #121215 1px);
-            background-size: 20px 20px;
-            background-position: 0 0, 10px 10px;
-        }
-        .gold-glow { box-shadow: 0 0 25px -5px rgba(234, 179, 8, 0.3); }
-        .gold-gradient-text {
-            background: linear-gradient(135deg, #FFF 0%, #FACC15 50%, #CA8A04 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-    </style>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-gold-500 selection:text-black">
+<body class="bg-zinc-950 text-zinc-100 font-sans min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-zinc-950">
 
-    <!-- HEADER / NAVIGATION -->
-    <header class="sticky top-0 z-40 backdrop-blur-md bg-darkbg/90 border-b border-zinc-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16 sm:h-20">
-                
-                <!-- LOGO -->
-                <div class="flex items-center space-x-2.5 cursor-pointer flex-shrink-0" onclick="switchTab('catalog')">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center shadow-lg shadow-gold-500/20">
-                        <i class="fa-solid fa-motorcycle text-darkbg text-xl sm:text-2xl font-black"></i>
-                    </div>
-                    <div>
-                        <span class="text-base sm:text-xl font-black tracking-wider block leading-none">MOTO<span class="text-gold-400">MOLDE</span></span>
-                        <span class="text-[9px] sm:text-[10px] text-zinc-400 font-semibold tracking-widest uppercase">Digital Vectors</span>
-                    </div>
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-zinc-900/90 backdrop-blur border-b border-zinc-800">
+        <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showCatalog()">
+                <div class="bg-amber-500 text-zinc-950 p-2.5 rounded-xl font-black text-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
+                    <i class="fa-solid fa-motorcycle"></i>
                 </div>
-
-                <!-- DESKTOP SEARCH BAR -->
-                <div class="hidden md:flex flex-1 max-w-sm mx-6 relative">
-                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Buscar modelo (Pop, Titan, Biz...)" 
-                        class="w-full bg-cardbg border border-zinc-700/80 rounded-full py-2 pl-10 pr-4 text-xs sm:text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-gold-500 transition-all">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-zinc-500 text-xs"></i>
-                </div>
-
-                <!-- NAVIGATION BUTTONS -->
-                <div class="flex items-center space-x-2 sm:space-x-3">
-                    <button onclick="switchTab('catalog')" id="navCatalogBtn" class="px-2 sm:px-3 py-2 text-xs sm:text-sm font-semibold text-gold-400 border-b-2 border-gold-400 transition-all flex items-center space-x-1.5">
-                        <i class="fa-solid fa-store"></i>
-                        <span class="hidden sm:inline">Catálogo</span>
-                    </button>
-                    
-                    <button onclick="switchTab('members')" id="navMembersBtn" class="px-2 sm:px-3 py-2 text-xs sm:text-sm font-semibold text-zinc-400 hover:text-zinc-200 border-b-2 border-transparent transition-all flex items-center space-x-1.5 relative">
-                        <i class="fa-solid fa-cloud-arrow-down"></i>
-                        <span class="hidden xs:inline">Área VIP & Downloads</span>
-                    </button>
-
-                    <button onclick="toggleCartDrawer()" class="relative p-2 sm:p-2.5 rounded-xl bg-cardbg border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white transition-all">
-                        <i class="fa-solid fa-cart-shopping text-sm sm:text-lg"></i>
-                        <span id="cartCount" class="absolute -top-1 -right-1 bg-gold-500 text-darkbg text-[10px] sm:text-xs font-black rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center shadow-md">0</span>
-                    </button>
-
-                    <button onclick="switchTab('members')" class="px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-600 text-darkbg font-extrabold text-xs sm:text-sm transition-all flex items-center space-x-1.5 shadow-lg shadow-gold-500/20">
-                        <i class="fa-solid fa-crown"></i>
-                        <span>Área VIP</span>
-                    </button>
-
-                    <!-- BOTÃO VISÍVEL DE ACESSO AO ADMIN -->
-                    <button onclick="triggerAdminAccess()" class="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-gold-400 font-bold text-xs sm:text-sm border border-gold-500/40 transition-all flex items-center space-x-1" title="Painel Admin">
-                        <i class="fa-solid fa-gear"></i>
-                        <span class="hidden lg:inline">Admin</span>
-                    </button>
+                <div>
+                    <span class="text-xl font-black tracking-tight text-white block leading-none">MOTOMOLDE</span>
+                    <span class="text-[10px] font-bold text-amber-500 tracking-widest uppercase">Digital Vectors</span>
                 </div>
             </div>
 
-            <!-- MOBILE SEARCH BAR -->
-            <div class="pb-3 md:hidden">
+            <div class="flex-1 max-w-md mx-6 hidden md:block">
                 <div class="relative">
-                    <input type="text" id="mobileSearchInput" oninput="handleSearch(true)" placeholder="Buscar molde (Pop, Titan, Biz, Bros...)" 
-                        class="w-full bg-cardbg border border-zinc-700 rounded-full py-2 pl-10 pr-4 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-gold-500">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-zinc-500 text-xs"></i>
+                    <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400"></i>
+                    <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Buscar modelo (Pop, Titan, Biz...)" class="w-full bg-zinc-900 border border-zinc-700 rounded-full pl-11 pr-4 py-2.5 text-sm focus:outline-none focus:border-amber-500 transition-colors">
                 </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <button onclick="showCatalog()" class="text-sm font-medium hover:text-amber-400 px-3 py-2 transition-colors hidden sm:inline-block">
+                    <i class="fa-solid fa-store mr-1.5 text-amber-500"></i> Catálogo
+                </button>
+                <button onclick="openVipModal()" class="bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-bold px-4 py-2.5 rounded-xl text-sm shadow-lg shadow-amber-500/20 hover:opacity-95 transition-all flex items-center space-x-2">
+                    <i class="fa-solid fa-crown"></i>
+                    <span id="vipBtnText">Área VIP</span>
+                </button>
+                <button onclick="openAdminLogin()" class="bg-zinc-800 hover:bg-zinc-700 text-amber-400 font-bold px-3.5 py-2.5 rounded-xl text-sm transition-colors border border-zinc-700 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-lock text-xs"></i>
+                    <span>Admin</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT CONTAINER -->
-    <main class="flex-grow">
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8">
         
-        <!-- SECTION: CATALOG VIEW -->
-        <div id="catalogTab" class="block">
-            <section class="relative bg-carbon-pattern border-b border-zinc-800 py-8 sm:py-16 overflow-hidden">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div class="text-center sm:text-left space-y-4 max-w-3xl">
-                        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/30 text-gold-400 text-[11px] font-bold uppercase tracking-wider">
-                            <i class="fa-solid fa-bolt"></i>
-                            <span>Acesso restrito a downloads pós-pagamento aprovado</span>
-                        </div>
-                        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight">
-                            Moldes Vetoriais para <span class="gold-gradient-text">Plotter de Recorte</span>
-                        </h1>
-                        <p class="text-xs sm:text-sm lg:text-base text-zinc-400 leading-relaxed">
-                            Arquivos vetorizados profissionais em <strong>CDR (CorelDRAW)</strong> e <strong>PDF</strong> prontos para encaixe perfeito em qualquer modelo de motocicleta.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- PLANS & VIP BANNER IN CATALOG -->
-            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div class="bg-gradient-to-r from-zinc-900 via-cardbg to-zinc-900 border border-gold-500/40 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
-                    <div>
-                        <span class="text-xs font-bold text-gold-400 uppercase tracking-widest bg-gold-500/10 px-3 py-1 rounded-full">Plano Anual Exclusivo</span>
-                        <h3 class="text-xl sm:text-2xl font-black text-white mt-2">Tenha Acesso VIP a Todo o Acervo de Moldes</h3>
-                        <p class="text-xs sm:text-sm text-zinc-400 mt-1">Assine agora por apenas <strong class="text-white vipPriceDisplay">R$ 147,00/ano</strong>. O acesso só é liberado após confirmação bancária do PIX/Cartão.</p>
-                    </div>
-                    <button onclick="buyVipPlan()" class="w-full md:w-auto px-6 py-4 bg-gradient-to-r from-gold-400 to-gold-600 text-darkbg font-black rounded-xl text-xs sm:text-sm shadow-lg hover:scale-105 transition-all flex items-center justify-center space-x-2 flex-shrink-0">
-                        <i class="fa-solid fa-crown"></i>
-                        <span>Assinar VIP (Gerar PIX de Pagamento)</span>
-                    </button>
-                </div>
-            </section>
-
-            <section id="catalogGrid" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-2">
-                    <h2 class="text-xl sm:text-2xl font-black text-white">Catálogo de Moldes</h2>
-                    <span class="text-xs sm:text-sm text-zinc-400">Exibindo <span id="productCount" class="text-gold-400 font-bold">0</span> modelos</span>
-                </div>
-                
-                <div class="flex space-x-2 overflow-x-auto pb-3 mb-6 scrollbar-none" id="categoryButtons"></div>
-                <div id="productsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"></div>
-            </section>
-        </div>
-
-        <!-- SECTION: MEMBERS & VIP DOWNLOADS VIEW -->
-        <div id="membersTab" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div id="vipBanner" class="hidden bg-gradient-to-r from-gold-500/20 via-cardbg to-cardbg border border-gold-500/40 rounded-2xl p-5 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center space-x-3 text-center sm:text-left">
-                    <div class="w-10 h-10 rounded-full bg-gold-500 flex items-center justify-center text-darkbg text-xl font-black flex-shrink-0 mx-auto sm:mx-0">
-                        <i class="fa-solid fa-crown"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-sm sm:text-base font-bold text-white">Assinatura VIP Confirmada pelo Gateway</h3>
-                        <p class="text-xs text-zinc-400">Pagamento aprovado. Acesso liberado a <strong>todos os arquivos e moldes disponíveis</strong>.</p>
-                    </div>
-                </div>
+        <!-- Banner VIP -->
+        <section class="bg-gradient-to-r from-zinc-900 via-zinc-900 to-amber-950/40 border border-amber-500/30 rounded-3xl p-8 mb-12 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="absolute right-0 top-0 translate-x-1/4 -translate-y-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="space-y-3 z-10">
+                <span class="bg-amber-500/10 text-amber-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-amber-500/20">Plano Anual Exclusivo</span>
+                <h1 class="text-3xl md:text-4xl font-black tracking-tight text-white">Tenha Acesso VIP a Todo o Acervo de Moldes</h1>
+                <p class="text-zinc-400 text-sm max-w-xl">Baixe moldes ilimitados atualizados semanalmente com alta precisão em CDR, PDF e PNG prontos para corte e impressão.</p>
             </div>
-
-            <div id="lockedVipNotice" class="text-center py-16 bg-cardbg rounded-2xl border border-zinc-800 p-6 space-y-4">
-                <div class="w-14 h-14 bg-zinc-800 text-gold-400 rounded-full flex items-center justify-center mx-auto text-2xl border border-gold-500/30">
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <h3 class="text-lg sm:text-xl font-bold text-white">Área VIP Bloqueada (Pagamento Pendente)</h3>
-                <p class="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto">O acesso aos downloads e arquivos CDR/PDF é restrito e só é liberado estritamente após a confirmação bancária do pagamento.</p>
-                <div class="pt-2 flex flex-col sm:flex-row justify-center gap-3">
-                    <button onclick="buyVipPlan()" class="px-6 py-3 bg-gold-500 text-darkbg font-extrabold text-xs rounded-xl shadow">Pagar Plano VIP (<span class="vipPriceDisplay">R$ 147,00</span>)</button>
-                    <button onclick="switchTab('catalog')" class="px-6 py-3 bg-zinc-800 text-zinc-300 font-bold text-xs rounded-xl border border-zinc-700">Comprar Moldes Avulsos</button>
-                </div>
-            </div>
-
-            <div id="unlockedDownloadsContainer" class="hidden">
-                <h2 class="text-xl sm:text-2xl font-black text-white mb-6">Biblioteca de Downloads Liberados</h2>
-                <div id="userDownloadsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-            </div>
-        </div>
-
-        <!-- SECTION: ADMIN PANEL -->
-        <div id="adminTab" class="hidden max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="bg-cardbg border-2 border-gold-500/40 rounded-2xl p-5 sm:p-8 space-y-6">
-                <div class="flex items-center justify-between pb-4 border-b border-zinc-800">
-                    <h2 class="text-lg sm:text-xl font-black text-white flex items-center">
-                        <i class="fa-solid fa-shield-halved text-gold-400 mr-2"></i> Painel Administrador & Gateway
-                    </h2>
-                    <button onclick="switchTab('catalog')" class="text-xs text-zinc-400 hover:text-white px-3 py-1.5 bg-zinc-800 rounded-lg">Voltar ao site</button>
-                </div>
-                
-                <!-- GATEWAY DE PAGAMENTO CONFIG SECTION -->
-                <div class="bg-zinc-900/90 p-4 sm:p-6 rounded-xl border border-gold-500/40">
-                    <h3 class="text-sm font-bold text-gold-400 mb-2"><i class="fa-solid fa-credit-card mr-2"></i> Configurar Gateway de Pagamento (Mercado Pago / Asaas)</h3>
-                    <p class="text-xs text-zinc-400 mb-4">Insira sua chave de API para automatizar a aprovação de pagamentos via PIX e liberação de downloads.</p>
-                    <form onsubmit="handleSaveGatewayConfig(event)" class="space-y-3">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">Plataforma</label>
-                                <select id="gatewayProvider" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white">
-                                    <option value="mercadopago">Mercado Pago</option>
-                                    <option value="asaas">Asaas</option>
-                                    <option value="stripe">Stripe</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">Access Token / API Key</label>
-                                <input type="password" id="gatewayToken" placeholder="APP_USR-..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white">
-                            </div>
-                        </div>
-                        <button type="submit" class="px-4 py-2 bg-gold-500 hover:bg-gold-400 text-darkbg font-extrabold text-xs rounded-xl shadow">Salvar Chaves do Gateway</button>
-                    </form>
-                </div>
-
-                <!-- CHANGE ADMIN PASSWORD SECTION -->
-                <div class="bg-zinc-900/90 p-4 sm:p-6 rounded-xl border border-gold-500/30">
-                    <h3 class="text-sm font-bold text-gold-400 mb-2"><i class="fa-solid fa-key mr-2"></i> Alterar Senha do Administrador</h3>
-                    <p class="text-xs text-zinc-400 mb-4">Defina uma nova senha mestre para proteger o seu painel de acesso secreto.</p>
-                    <form onsubmit="handleSaveNewAdminPassword(event)" class="space-y-3">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">Nova Senha Mestre</label>
-                                <input type="password" id="newAdminPass" required placeholder="Nova senha" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">Confirmar Nova Senha</label>
-                                <input type="password" id="confirmAdminPass" required placeholder="Confirme a senha" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white">
-                            </div>
-                        </div>
-                        <button type="submit" class="px-4 py-2 bg-gold-500 hover:bg-gold-400 text-darkbg font-extrabold text-xs rounded-xl shadow">Atualizar Senha Admin</button>
-                    </form>
-                </div>
-
-                <!-- VIP PRICE CONFIGURATION SECTION -->
-                <div class="bg-zinc-900/90 p-4 sm:p-6 rounded-xl border border-gold-500/30">
-                    <h3 class="text-sm font-bold text-gold-400 mb-2"><i class="fa-solid fa-crown mr-2"></i> Configurar Preço do Plano VIP</h3>
-                    <p class="text-xs text-zinc-400 mb-4">Altere o valor da assinatura VIP anual exibido no site e nos botões de pagamento.</p>
-                    <form onsubmit="handleSaveVipPrice(event)" class="space-y-3">
-                        <div>
-                            <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">Novo Valor Anual (R$)</label>
-                            <input type="number" step="0.01" id="vipPriceInput" required placeholder="147.00" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white">
-                        </div>
-                        <button type="submit" class="px-4 py-2 bg-gold-500 hover:bg-gold-400 text-darkbg font-extrabold text-xs rounded-xl shadow">Salvar Preço VIP</button>
-                    </form>
-                </div>
-
-                <!-- CADASTRO / EDIÇÃO DE MOLDE -->
-                <div class="bg-zinc-900/60 p-4 sm:p-6 rounded-xl border border-zinc-800">
-                    <h3 id="formTitleHeader" class="text-sm font-bold text-gold-400 mb-4"><i class="fa-solid fa-plus-circle mr-2"></i> Cadastrar Novo Molde / Marca</h3>
-                    <form onsubmit="handleSaveProduct(event)" class="space-y-4">
-                        <input type="hidden" id="editProductId">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">Título do Molde</label>
-                                <input type="text" id="newTitle" required placeholder="Ex: Molde Honda XRE 300 Sahara" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">Preço (R$)</label>
-                                <input type="number" step="0.01" id="newPrice" required placeholder="39.90" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">Categoria/Marca</label>
-                                <div class="flex space-x-2">
-                                    <select id="newCategorySelect" class="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white"></select>
-                                    <button type="button" onclick="toggleNewCategoryInput()" class="px-3 bg-zinc-800 text-gold-400 font-bold text-xs rounded-xl border border-zinc-700">+</button>
-                                </div>
-                            </div>
-                            <div id="customCategoryContainer" class="hidden">
-                                <label class="block text-[11px] font-bold text-gold-400 uppercase mb-1">Nova Marca / Categoria</label>
-                                <input type="text" id="newCustomCategory" placeholder="Ex: Kawasaki, Shineray..." class="w-full bg-zinc-900 border border-gold-500/50 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">URL da Imagem de Capa</label>
-                                <input type="url" id="newImage" required placeholder="https://..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">URL Direta do Arquivo (.ZIP / .CDR / .PDF)</label>
-                                <input type="url" id="newDownloadUrl" required placeholder="Link do Google Drive / OneDrive" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white">
-                            </div>
-                        </div>
-
-                        <div class="flex space-x-3">
-                            <button type="submit" id="saveBtnSubmit" class="flex-1 py-3 bg-gold-500 hover:bg-gold-400 text-darkbg font-bold rounded-xl text-xs sm:text-sm transition-all shadow-lg">
-                                Salvar e Sincronizar
-                            </button>
-                            <button type="button" id="cancelEditBtn" onclick="resetAdminForm()" class="hidden px-5 py-3 bg-zinc-800 text-zinc-300 font-bold rounded-xl text-xs sm:text-sm">
-                                Cancelar
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- LISTA DE ITENS CADASTRADOS PARA EDITAR / EXCLUIR -->
-                <div class="bg-zinc-900/60 p-4 sm:p-6 rounded-xl border border-zinc-800">
-                    <h3 class="text-sm font-bold text-white mb-4"><i class="fa-solid fa-list-check mr-2 text-gold-400"></i> Gerenciar Itens Cadastrados</h3>
-                    <div id="adminProductsList" class="space-y-2 max-h-64 overflow-y-auto"></div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- CART SLIDE DRAWER -->
-    <div id="cartDrawer" class="fixed inset-0 z-50 hidden">
-        <div onclick="toggleCartDrawer()" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-        <div class="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-cardbg p-5 flex flex-col justify-between border-l border-zinc-800">
-            <div>
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-base font-bold text-white">Carrinho de Compras</h3>
-                    <button onclick="toggleCartDrawer()" class="text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-                </div>
-                <div id="cartItemsList" class="space-y-3 overflow-y-auto max-h-[60vh]"></div>
-            </div>
-            <div>
-                <div class="flex justify-between text-sm font-black text-white py-3 border-t border-zinc-800 mb-3">
-                    <span>Total:</span>
-                    <span id="cartTotal" class="text-gold-400">R$ 0,00</span>
-                </div>
-                <button onclick="checkoutCart()" class="w-full py-3.5 bg-gold-500 hover:bg-gold-400 text-darkbg font-extrabold text-xs sm:text-sm rounded-xl shadow-lg">
-                    Gerar PIX de Pagamento
+            <div class="z-10 w-full md:w-auto">
+                <button onclick="openVipModal()" class="w-full md:w-auto bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold px-8 py-4 rounded-2xl shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span id="bannerVipPrice">Assinar VIP (Gerar PIX de Pagamento)</span>
                 </button>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- STRICT PAYMENT MODAL (PIX / GATEWAY) -->
-    <div id="paymentModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-cardbg border border-gold-500/50 rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-center space-y-4">
-            <button onclick="closePaymentModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            
-            <div class="w-12 h-12 bg-gold-500/20 text-gold-400 rounded-full flex items-center justify-center mx-auto text-xl border border-gold-500/40">
-                <i class="fa-solid fa-qrcode"></i>
-            </div>
-            
-            <h3 class="text-lg font-black text-white">Aguardando Pagamento PIX</h3>
-            <p class="text-xs text-zinc-400">Escaneie o QR Code ou copie a chave abaixo. Os downloads permanecerão bloqueados até que o gateway confirme o pagamento.</p>
-
-            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 inline-block">
-                <div class="w-36 h-36 bg-white rounded-lg mx-auto flex items-center justify-center p-2">
-                    <svg viewBox="0 0 100 100" class="w-full h-full text-black">
-                        <rect width="100" height="100" fill="white"/>
-                        <rect x="10" y="10" width="30" height="30" fill="black"/>
-                        <rect x="60" y="10" width="30" height="30" fill="black"/>
-                        <rect x="10" y="60" width="30" height="30" fill="black"/>
-                        <rect x="45" y="45" width="15" height="15" fill="black"/>
-                        <rect x="70" y="70" width="20" height="20" fill="black"/>
-                    </svg>
+        <!-- Catalogo de Produtos -->
+        <section>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-black tracking-tight text-white">Catálogo de Moldes</h2>
+                    <p class="text-xs text-zinc-400" id="productCountBadge">Carregando moldes...</p>
+                </div>
+                <div class="flex items-center space-x-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0" id="categoryFilters">
+                    <button onclick="filterCategory('all', event)" class="cat-btn bg-amber-500 text-zinc-950 font-bold px-4 py-2 rounded-xl text-xs whitespace-nowrap transition-all">Todas as Motos</button>
+                    <button onclick="filterCategory('honda', event)" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Honda Pop</button>
+                    <button onclick="filterCategory('biz', event)" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Honda Biz</button>
+                    <button onclick="filterCategory('titan', event)" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Titan / Fan / Start</button>
+                    <button onclick="filterCategory('bros', event)" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Honda Bros</button>
+                    <button onclick="filterCategory('yamaha', event)" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Yamaha Fazer</button>
                 </div>
             </div>
 
-            <div id="paymentModalPrice" class="text-sm font-bold text-gold-400">Valor: R$ 0,00</div>
+            <!-- Grid de Produtos -->
+            <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Renderizado dinamicamente -->
+            </div>
+        </section>
 
-            <div class="relative">
-                <input type="text" id="pixCopyInput" readonly value="00020126580014br.gov.bcb.pix..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl py-2 pl-3 pr-10 text-[10px] text-zinc-300 font-mono">
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-zinc-900 border-t border-zinc-800 py-8 mt-16 text-center text-xs text-zinc-500">
+        <p>&copy; 2026 Moto Molde Digital - Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- Modal Admin Login -->
+    <div id="adminLoginModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-3xl p-6 relative">
+            <button onclick="closeAdminLogin()" class="absolute right-4 top-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <h3 class="text-xl font-bold mb-2 text-white"><i class="fa-solid fa-lock text-amber-500 mr-2"></i> Acesso Administrativo</h3>
+            <p class="text-zinc-400 text-xs mb-6">Digite a senha mestre para gerenciar produtos e configurações.</p>
+            <input type="password" id="adminPasswordInput" placeholder="Senha mestre (padrão: admin123)" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-3 text-sm mb-4 focus:outline-none focus:border-amber-500">
+            <button onclick="verifyAdminLogin()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3 rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20">Entrar no Painel</button>
+        </div>
+    </div>
+
+    <!-- Modal Admin Dashboard -->
+    <div id="adminDashboardModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden overflow-y-auto p-4 md:p-8">
+        <div class="max-w-4xl mx-auto bg-zinc-900 border border-zinc-800 rounded-3xl p-6 md:p-8 relative">
+            <button onclick="closeAdminDashboard()" class="absolute right-6 top-6 text-zinc-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            <div class="flex items-center space-x-3 mb-8 border-b border-zinc-800 pb-4">
+                <div class="bg-amber-500 text-zinc-950 p-3 rounded-xl font-bold"><i class="fa-solid fa-sliders"></i></div>
+                <div>
+                    <h2 class="text-2xl font-black text-white">Painel Administrativo</h2>
+                    <p class="text-xs text-zinc-400">Gerencie preços, senhas e novos moldes em tempo real.</p>
+                </div>
             </div>
 
-            <button onclick="simulateBankWebhookApproval()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow-lg transition-all">
-                <i class="fa-solid fa-check-circle mr-2"></i> Simular Webhook / Confirmação do Banco
-            </button>
-            <button onclick="closePaymentModal()" class="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 text-xs font-bold rounded-xl">
-                Fechar (Manter Bloqueado)
+            <!-- Configurar Senha e Preço VIP -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
+                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-key mr-2"></i> Alterar Senha Admin</h4>
+                    <input type="password" id="newAdminPass" placeholder="Nova senha mestre" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
+                    <button onclick="updateAdminPassword()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 rounded-xl text-xs border border-zinc-700">Atualizar Senha</button>
+                </div>
+                <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
+                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-crown mr-2"></i> Configurar Preço VIP (R$)</h4>
+                    <input type="number" id="newVipPriceInput" placeholder="Ex: 150.00" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
+                    <button onclick="saveVipPrice()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar Preço VIP</button>
+                </div>
+            </div>
+
+            <!-- Adicionar Molde -->
+            <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 mb-8">
+                <h4 class="font-bold text-sm text-amber-400 mb-4"><i class="fa-solid fa-plus-circle mr-2"></i> Cadastrar Novo Molde</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <input type="text" id="moldTitle" placeholder="Título (Ex: Kit Molde XRE 300)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
+                    <input type="number" id="moldPrice" placeholder="Preço (Ex: 29.90)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
+                    <input type="text" id="moldCategory" placeholder="Categoria (Ex: honda, biz, titan, bros, yamaha)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
+                    <input type="text" id="moldCategoryLabel" placeholder="Rótulo da Categoria (Ex: HONDA)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
+                    <input type="text" id="moldImage" placeholder="URL da Imagem de Capa" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
+                    <input type="text" id="moldDownloadUrl" placeholder="Link do Google Drive / OneDrive" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
+                </div>
+                <button onclick="addNewMold()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition-all">Salvar e Sincronizar com Firebase</button>
+            </div>
+
+            <!-- Lista de Produtos Cadastrados -->
+            <h4 class="font-bold text-sm text-white mb-3">Moldes Ativos no Sistema</h4>
+            <div id="adminProductsList" class="space-y-2 max-h-60 overflow-y-auto pr-2">
+                <!-- Preenchido via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal PIX / Pagamento -->
+    <div id="pixModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-3xl p-6 text-center relative">
+            <button onclick="closePixModal()" class="absolute right-4 top-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div class="bg-amber-500/10 text-amber-500 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
+                <i class="fa-solid fa-qrcode"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-1 text-white">Pagamento PIX Seguro</h3>
+            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Escaneie o QR Code abaixo para liberar instantaneamente.</p>
+            <div class="bg-white p-4 rounded-2xl w-48 h-48 mx-auto mb-4 flex items-center justify-center border-4 border-amber-500/20">
+                <i class="fa-solid fa-qrcode text-8xl text-zinc-950"></i>
+            </div>
+            <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 mb-4 text-xs font-mono text-amber-400 break-all select-all">
+                00020126580014br.gov.bcb.pix...mercado pago
+            </div>
+            <button onclick="confirmPaymentSimulation()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-check-circle"></i>
+                <span>Simular Confirmação do Banco / PIX</span>
             </button>
         </div>
     </div>
 
-    <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-zinc-900 border border-gold-500/60 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-2">
-        <i class="fa-solid fa-circle-check text-gold-400"></i>
-        <span id="toastMessage" class="text-xs font-bold">Aviso</span>
-    </div>
-
-    <!-- FIREBASE & CORE SCRIPT -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+    <!-- Script Principal Robusto com Fallback e Credenciais Oficiais -->
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBgsuJa29UkurPuKeqBD0jLuLeN_kwDtEU",
             authDomain: "motomolde.firebaseapp.com",
@@ -402,513 +189,270 @@
             appId: "1:412764426459:web:45b2fd3b082c7ec0ddbcfe"
         };
 
-        let app, db, auth;
-        try {
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-        } catch (e) {
-            console.warn("Firebase init warning:", e);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // Dados padrão locais para garantir renderização imediata sem travamentos
+        let products = [
+            { id: '1', title: 'Kit Molde Honda Pop 110i (2016-2025)', price: 29.90, category: 'honda', categoryLabel: 'HONDA', image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=500&auto=format&fit=crop&q=60', downloadUrl: 'https://drive.google.com', badge: 'Mais Vendido' },
+            { id: '2', title: 'Kit Molde Yamaha Fazer 250 FZ25', price: 39.90, category: 'yamaha', categoryLabel: 'YAMAHA', image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=500&auto=format&fit=crop&q=60', downloadUrl: 'https://drive.google.com', badge: 'Novo' }
+        ];
+
+        let vipPrice = 150.00;
+        let adminPass = "admin123";
+        let activeCategory = 'all';
+        let currentItemToBuy = null;
+
+        function initFirebaseListeners() {
+            // Renderiza imediatamente com os dados locais para exibir a tela na hora
+            renderProducts();
+            renderAdminProductsList();
+
+            // Sincroniza produtos do Firestore em tempo real
+            db.collection("products").onSnapshot((snapshot) => {
+                if (!snapshot.empty) {
+                    let cloudProducts = [];
+                    snapshot.forEach((doc) => {
+                        cloudProducts.push({ id: doc.id, ...doc.data() });
+                    });
+                    if (cloudProducts.length > 0) {
+                        products = cloudProducts;
+                        renderProducts();
+                        renderAdminProductsList();
+                    }
+                }
+            }, (error) => {
+                console.warn("Aviso de conexão offline:", error);
+            });
+
+            // Sincroniza configurações e preço VIP do Firestore
+            db.collection("settings").doc("config").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.vipPrice !== undefined) vipPrice = Number(data.vipPrice);
+                    if (data.adminPass) adminPass = data.adminPass;
+                    
+                    const bannerEl = document.getElementById("bannerVipPrice");
+                    if (bannerEl) bannerEl.innerText = `Assinar VIP por R$ ${vipPrice.toFixed(2)} (Gerar PIX)`;
+                    
+                    const vipInput = document.getElementById("newVipPriceInput");
+                    if (vipInput) vipInput.value = vipPrice;
+                }
+            }, (error) => {
+                console.warn("Aviso ao carregar configurações:", error);
+            });
         }
 
-        window.categories = [
-            { id: "all", name: "Todas as Motos" },
-            { id: "pop", name: "Honda Pop" },
-            { id: "biz", name: "Honda Biz" },
-            { id: "titan", name: "Titan / Fan / Start" },
-            { id: "bros", name: "Honda Bros" },
-            { id: "fazer", name: "Yamaha Fazer" }
-        ];
+        function renderProducts() {
+            const grid = document.getElementById("productsGrid");
+            if (!grid) return;
+            grid.innerHTML = "";
 
-        window.products = [
-            {
-                id: "1",
-                title: "Kit Molde Honda Pop 110i (2016-2025)",
-                category: "pop",
-                categoryLabel: "Honda Pop",
-                price: 29.90,
-                image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80",
-                badge: "Mais Vendido",
-                downloadUrl: "https://drive.google.com"
-            },
-            {
-                id: "2",
-                title: "Kit Molde Yamaha Fazer 250 FZ25",
-                category: "fazer",
-                categoryLabel: "Yamaha Fazer",
-                price: 39.90,
-                image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=800&q=80",
-                badge: "Novo",
-                downloadUrl: "https://drive.google.com"
-            }
-        ];
-
-        window.activeCategory = "all";
-        window.searchQuery = "";
-        window.cart = [];
-        window.userDownloads = [];
-        window.currentUser = null;
-        window.isVipUser = false;
-        window.pendingVip = false;
-        window.vipPlanPrice = parseFloat(localStorage.getItem('moto_vip_price')) || 147.00;
-
-        window.renderCategories = function() {
-            const container = document.getElementById('categoryButtons');
-            if(!container) return;
-            container.innerHTML = window.categories.map(cat => `
-                <button onclick="filterByCategory('${cat.id}')" 
-                    class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${window.activeCategory === cat.id ? 'bg-gold-500 text-darkbg shadow' : 'bg-cardbg text-zinc-400 hover:text-white border border-zinc-800'}">
-                    ${cat.name}
-                </button>
-            `).join('');
-        };
-
-        window.renderProducts = function() {
-            const container = document.getElementById('productsContainer');
-            if(!container) return;
-            const filtered = window.products.filter(p => {
-                const matchesCat = window.activeCategory === 'all' || p.category === window.activeCategory;
-                const matchesSearch = p.title.toLowerCase().includes(window.searchQuery);
+            const searchInput = document.getElementById("searchInput");
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+            
+            const filtered = products.filter(p => {
+                const matchesCat = activeCategory === 'all' || p.category === activeCategory;
+                const matchesSearch = p.title.toLowerCase().includes(searchTerm);
                 return matchesCat && matchesSearch;
             });
 
-            const countEl = document.getElementById('productCount');
-            if(countEl) countEl.textContent = filtered.length;
+            const badge = document.getElementById("productCountBadge");
+            if (badge) badge.innerText = `Exibindo ${filtered.length} modelos`;
 
-            container.innerHTML = filtered.map(p => `
-                <div class="bg-cardbg border border-zinc-800 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between shadow-lg">
-                    <div>
-                        <div class="relative rounded-xl overflow-hidden bg-zinc-900 mb-3 h-36 sm:h-40">
-                            <img src="${p.image}" class="w-full h-full object-cover">
-                            <span class="absolute top-2 left-2 bg-gold-500 text-darkbg text-[9px] font-black px-2 py-0.5 rounded">${p.badge || 'Molde'}</span>
-                        </div>
-                        <span class="text-[10px] text-gold-400 font-bold uppercase">${p.categoryLabel || p.category}</span>
-                        <h3 class="text-xs sm:text-sm font-bold text-white mt-0.5 line-clamp-2">${p.title}</h3>
-                    </div>
-                    <div class="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between">
-                        <span class="text-base sm:text-lg font-black text-white">R$ ${Number(p.price).toFixed(2).replace('.', ',')}</span>
-                        <button onclick="addToCart('${p.id}')" class="px-3 py-2 bg-gold-500 hover:bg-gold-400 text-darkbg font-bold text-xs rounded-xl transition-all">
-                            Comprar
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        };
-
-        window.renderCategorySelect = function() {
-            const select = document.getElementById('newCategorySelect');
-            if (!select) return;
-            select.innerHTML = window.categories.filter(c => c.id !== 'all').map(c => `
-                <option value="${c.id}">${c.name}</option>
-            `).join('');
-        };
-
-        window.renderAdminProductsList = function() {
-            const list = document.getElementById('adminProductsList');
-            if (!list) return;
-            list.innerHTML = window.products.map(p => `
-                <div class="flex items-center justify-between p-2.5 bg-zinc-900 rounded-xl border border-zinc-800 text-xs">
-                    <div class="flex items-center space-x-2 truncate max-w-[180px] sm:max-w-[280px]">
-                        <img src="${p.image}" class="w-8 h-8 rounded object-cover">
-                        <span class="font-bold text-white truncate">${p.title}</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-gold-400 font-bold">R$ ${Number(p.price).toFixed(2)}</span>
-                        <button onclick="loadProductForEdit('${p.id}')" class="px-2 py-1 bg-zinc-800 text-gold-400 rounded-lg border border-gold-500/30 font-bold">Editar</button>
-                        <button onclick="deleteProduct('${p.id}')" class="px-2 py-1 bg-red-900/40 text-red-400 rounded-lg border border-red-500/30 font-bold"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </div>
-            `).join('') || '<p class="text-xs text-zinc-500 text-center py-2">Nenhum produto cadastrado.</p>';
-        };
-
-        window.renderDownloadsGrid = function() {
-            const grid = document.getElementById('userDownloadsGrid');
-            const lockedNotice = document.getElementById('lockedVipNotice');
-            const unlockedContainer = document.getElementById('unlockedDownloadsContainer');
-            const banner = document.getElementById('vipBanner');
-
-            if(!grid) return;
-
-            if (!window.isVipUser && window.userDownloads.length === 0) {
-                if(lockedNotice) lockedNotice.classList.remove('hidden');
-                if(unlockedContainer) unlockedContainer.classList.add('hidden');
-                if(banner) banner.classList.add('hidden');
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-zinc-500">Nenhum molde encontrado.</div>`;
                 return;
             }
 
-            if(lockedNotice) lockedNotice.classList.add('hidden');
-            if(unlockedContainer) unlockedContainer.classList.remove('hidden');
-
-            if (window.isVipUser) {
-                if(banner) banner.classList.remove('hidden');
-            } else {
-                if(banner) banner.classList.add('hidden');
-            }
-
-            const items = window.isVipUser ? window.products : window.products.filter(p => window.userDownloads.includes(p.id));
-
-            grid.innerHTML = items.map(item => `
-                <div class="bg-cardbg border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between shadow-lg">
-                    <div>
-                        <div class="flex items-center space-x-3 mb-3">
-                            <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover">
-                            <div>
-                                <span class="text-[9px] text-gold-400 font-bold uppercase">${item.categoryLabel || item.category}</span>
-                                <h4 class="text-xs sm:text-sm font-bold text-white line-clamp-1">${item.title}</h4>
+            filtered.forEach(p => {
+                grid.innerHTML += `
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-xl hover:border-amber-500/50 transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="relative h-48 bg-zinc-950 overflow-hidden">
+                                <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover">
+                                ${p.badge ? `<span class="absolute top-3 left-3 bg-amber-500 text-zinc-950 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">${p.badge}</span>` : ''}
+                                <span class="absolute bottom-3 right-3 bg-zinc-950/80 backdrop-blur text-zinc-300 text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider border border-zinc-800">${p.categoryLabel || p.category}</span>
+                            </div>
+                            <div class="p-5">
+                                <h3 class="font-bold text-sm text-white mb-2 line-clamp-2">${p.title}</h3>
+                                <div class="text-lg font-black text-amber-400">R$ ${Number(p.price).toFixed(2)}</div>
                             </div>
                         </div>
-                        <span class="text-[10px] text-emerald-400 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Pagamento Confirmado pelo Gateway</span>
+                        <div class="p-5 pt-0">
+                            <button onclick="buyProduct('${p.id}', '${p.title}', ${p.price})" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2.5 rounded-xl text-xs transition-all shadow-md flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                <span>Comprar</span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="mt-4 space-y-2">
-                        <a href="${item.downloadUrl || '#'}" target="_blank" class="block text-center py-2.5 bg-zinc-900 text-gold-400 text-xs font-bold rounded-xl border border-gold-500/30 hover:bg-zinc-800 transition-all">Baixar Arquivo Vetorial (.ZIP / .CDR)</a>
-                    </div>
-                </div>
-            `).join('');
-        };
-
-        function initLocalFallback() {
-            window.renderCategories();
-            window.renderProducts();
-            window.renderCategorySelect();
-            window.renderDownloadsGrid();
-            window.renderAdminProductsList();
-            updateVipPriceUI();
+                `;
+            });
         }
 
-        if (auth && db) {
-            signInAnonymously(auth).then(() => {
-                onAuthStateChanged(auth, (user) => {
-                    window.currentUser = user;
-                });
-                
-                // Firestore Products Listener
-                const colRef = collection(db, 'products');
-                onSnapshot(colRef, (snapshot) => {
-                    const cloudProducts = [];
-                    snapshot.forEach(docSnap => {
-                        cloudProducts.push({ id: docSnap.id, ...docSnap.data() });
-                    });
-                    if (cloudProducts.length > 0) {
-                        window.products = cloudProducts;
-                    } else {
-                        window.products.forEach(async (p) => {
-                            await setDoc(doc(db, 'products', String(p.id)), p);
-                        });
-                    }
-                    initLocalFallback();
-                }, (error) => {
-                    console.warn("Firestore sync fallback:", error);
-                    initLocalFallback();
-                });
-
-                // Firestore Settings Listener for VIP Price
-                const settingsRef = doc(db, 'settings', 'config');
-                onSnapshot(settingsRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        if (data.vipPrice) {
-                            window.vipPlanPrice = Number(data.vipPrice);
-                            localStorage.setItem('moto_vip_price', window.vipPlanPrice);
-                            updateVipPriceUI();
-                        }
-                    }
-                });
-            }).catch(() => {
-                initLocalFallback();
+        function filterCategory(cat, event) {
+            activeCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-zinc-950');
+                btn.classList.add('bg-zinc-900', 'text-zinc-300', 'border', 'border-zinc-800');
             });
-        } else {
-            initLocalFallback();
+            if (event && event.target) {
+                event.target.classList.remove('bg-zinc-900', 'text-zinc-300', 'border', 'border-zinc-800');
+                event.target.classList.add('bg-amber-500', 'text-zinc-950');
+            }
+            renderProducts();
+        }
+
+        function filterProducts() {
+            renderProducts();
+        }
+
+        function showCatalog() {
+            activeCategory = 'all';
+            const searchInput = document.getElementById("searchInput");
+            if (searchInput) searchInput.value = "";
+            renderProducts();
+        }
+
+        function buyProduct(id, title, price) {
+            currentItemToBuy = { id, title, price, type: 'product' };
+            document.getElementById("pixModalSubtitle").innerText = `Pagamento para: ${title} (R$ ${price.toFixed(2)})`;
+            document.getElementById("pixModal").classList.remove("hidden");
+        }
+
+        function openVipModal() {
+            currentItemToBuy = { title: 'Acesso VIP Anual', price: vipPrice, type: 'vip' };
+            document.getElementById("pixModalSubtitle").innerText = `Assinatura VIP Anual (R$ ${Number(vipPrice).toFixed(2)})`;
+            document.getElementById("pixModal").classList.remove("hidden");
+        }
+
+        function closePixModal() {
+            document.getElementById("pixModal").classList.add("hidden");
+        }
+
+        function confirmPaymentSimulation() {
+            alert("Pagamento confirmado com sucesso! Acesso liberado.");
+            closePixModal();
+            if (currentItemToBuy && currentItemToBuy.type === 'product') {
+                const prod = products.find(p => p.id === currentItemToBuy.id);
+                if (prod && prod.downloadUrl) {
+                    window.open(prod.downloadUrl, '_blank');
+                }
+            } else if (currentItemToBuy && currentItemToBuy.type === 'vip') {
+                alert("Parabéns! Sua conta agora possui Acesso VIP Ilimitado.");
+            }
+        }
+
+        function openAdminLogin() {
+            document.getElementById("adminLoginModal").classList.remove("hidden");
+        }
+
+        function closeAdminLogin() {
+            document.getElementById("adminLoginModal").classList.add("hidden");
+        }
+
+        function verifyAdminLogin() {
+            const pass = document.getElementById("adminPasswordInput").value;
+            if (pass === adminPass) {
+                closeAdminLogin();
+                document.getElementById("adminDashboardModal").classList.remove("hidden");
+                renderAdminProductsList();
+            } else {
+                alert("Senha incorreta!");
+            }
+        }
+
+        function closeAdminDashboard() {
+            document.getElementById("adminDashboardModal").classList.add("hidden");
+        }
+
+        function updateAdminPassword() {
+            const newPass = document.getElementById("newAdminPass").value;
+            if (!newPass) return alert("Digite uma nova senha válida.");
+            adminPass = newPass;
+            db.collection("settings").doc("config").set({ adminPass: newPass, vipPrice: vipPrice }, { merge: true })
+                .then(() => alert("Senha atualizada e salva no Firebase com sucesso!"))
+                .catch(err => alert("Erro ao salvar: " + err.message));
+        }
+
+        function saveVipPrice() {
+            const newPrice = parseFloat(document.getElementById("newVipPriceInput").value);
+            if (isNaN(newPrice)) return alert("Digite um valor numérico válido.");
+            vipPrice = newPrice;
+            db.collection("settings").doc("config").set({ adminPass: adminPass, vipPrice: vipPrice }, { merge: true })
+                .then(() => {
+                    alert("Preço VIP atualizado no Firebase!");
+                    const bannerEl = document.getElementById("bannerVipPrice");
+                    if (bannerEl) bannerEl.innerText = `Assinar VIP por R$ ${Number(vipPrice).toFixed(2)} (Gerar PIX)`;
+                })
+                .catch(err => alert("Erro ao salvar: " + err.message));
+        }
+
+        function addNewMold() {
+            const title = document.getElementById("moldTitle").value;
+            const price = parseFloat(document.getElementById("moldPrice").value);
+            const category = document.getElementById("moldCategory").value.toLowerCase();
+            const categoryLabel = document.getElementById("moldCategoryLabel").value;
+            const image = document.getElementById("moldImage").value;
+            const downloadUrl = document.getElementById("moldDownloadUrl").value;
+
+            if (!title || isNaN(price) || !category || !image || !downloadUrl) {
+                return alert("Preencha todos os campos corretamente.");
+            }
+
+            const newId = Date.now().toString();
+            const moldData = { title, price, category, categoryLabel, image, downloadUrl, badge: 'Novo' };
+
+            db.collection("products").doc(newId).set(moldData)
+                .then(() => {
+                    alert("Molde cadastrado e sincronizado com o Firebase!");
+                    document.getElementById("moldTitle").value = "";
+                    document.getElementById("moldPrice").value = "";
+                    document.getElementById("moldCategory").value = "";
+                    document.getElementById("moldCategoryLabel").value = "";
+                    document.getElementById("moldImage").value = "";
+                    document.getElementById("moldDownloadUrl").value = "";
+                })
+                .catch(err => alert("Erro ao salvar molde: " + err.message));
+        }
+
+        function deleteMold(id) {
+            if (confirm("Deseja realmente excluir este molde?")) {
+                db.collection("products").doc(id).delete()
+                    .then(() => alert("Molde removido com sucesso!"))
+                    .catch(err => alert("Erro ao remover: " + err.message));
+            }
+        }
+
+        function renderAdminProductsList() {
+            const list = document.getElementById("adminProductsList");
+            if (!list) return;
+            list.innerHTML = "";
+            if (products.length === 0) {
+                list.innerHTML = `<p class="text-zinc-500 text-xs">Nenhum molde cadastrado.</p>`;
+                return;
+            }
+            products.forEach(p => {
+                list.innerHTML += `
+                    <div class="flex items-center justify-between bg-zinc-900 p-3 rounded-xl border border-zinc-800">
+                        <div class="flex items-center space-x-3">
+                            <img src="${p.image}" class="w-10 h-10 object-cover rounded-lg">
+                            <div>
+                                <h5 class="font-bold text-xs text-white">${p.title}</h5>
+                                <span class="text-[10px] text-amber-400">R$ ${Number(p.price).toFixed(2)} - ${p.categoryLabel || p.category}</span>
+                            </div>
+                        </div>
+                        <button onclick="deleteMold('${p.id}')" class="bg-red-500/15 hover:bg-red-500 text-red-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition-all"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
         }
 
         window.onload = function() {
-            window.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && e.shiftKey && e.code === 'KeyA') {
-                    e.preventDefault();
-                    triggerAdminAccess();
-                }
-            });
-
-            if(window.location.hash === '#admin' || window.location.search.includes('admin')) {
-                triggerAdminAccess();
-            }
-
-            updateVipPriceUI();
+            initFirebaseListeners();
         };
-
-        window.updateVipPriceUI = function() {
-            const vipPriceEls = document.querySelectorAll('.vipPriceDisplay');
-            vipPriceEls.forEach(el => {
-                el.textContent = `R$ ${window.vipPlanPrice.toFixed(2).replace('.', ',')}`;
-            });
-            const input = document.getElementById('vipPriceInput');
-            if(input) input.value = window.vipPlanPrice;
-        }
-
-        window.handleSaveVipPrice = async function(e) {
-            e.preventDefault();
-            const val = parseFloat(document.getElementById('vipPriceInput').value);
-            if(isNaN(val) || val <= 0) {
-                showToast("Digite um valor válido para o VIP!");
-                return;
-            }
-            window.vipPlanPrice = val;
-            localStorage.setItem('moto_vip_price', val);
-            updateVipPriceUI();
-            showToast("Preço do Plano VIP atualizado com sucesso!");
-
-            try {
-                if (db) {
-                    await setDoc(doc(db, 'settings', 'config'), { vipPrice: val }, { merge: true });
-                }
-            } catch (err) {
-                console.warn("Error saving VIP price to Firestore:", err);
-            }
-        }
-
-        window.triggerAdminAccess = function() {
-            const pass = prompt("Digite a senha mestre do Administrador:");
-            const savedPass = localStorage.getItem('moto_admin_pass') || 'admin123';
-            if (pass === savedPass) {
-                switchTab('admin');
-                showToast("Bem-vindo ao Painel Administrativo!");
-            } else if (pass !== null) {
-                showToast("Senha incorreta! A senha padrão é admin123");
-            }
-        }
-
-        window.handleSaveNewAdminPassword = function(e) {
-            e.preventDefault();
-            const p1 = document.getElementById('newAdminPass').value;
-            const p2 = document.getElementById('confirmAdminPass').value;
-            if (p1 !== p2) {
-                showToast("As senhas não conferem!");
-                return;
-            }
-            localStorage.setItem('moto_admin_pass', p1);
-            showToast("Senha do Administrador atualizada com sucesso!");
-            e.target.reset();
-        }
-
-        window.filterByCategory = function(id) {
-            window.activeCategory = id;
-            window.renderCategories();
-            window.renderProducts();
-        }
-
-        window.handleSearch = function(isMobile = false) {
-            const id = isMobile ? 'mobileSearchInput' : 'searchInput';
-            const el = document.getElementById(id);
-            if(el) window.searchQuery = el.value.toLowerCase();
-            window.renderProducts();
-        }
-
-        window.loadProductForEdit = function(id) {
-            const p = window.products.find(item => String(item.id) === String(id));
-            if (!p) return;
-
-            document.getElementById('editProductId').value = p.id;
-            document.getElementById('newTitle').value = p.title;
-            document.getElementById('newPrice').value = p.price;
-            document.getElementById('newImage').value = p.image;
-            document.getElementById('newDownloadUrl').value = p.downloadUrl || '';
-            document.getElementById('newCategorySelect').value = p.category;
-
-            document.getElementById('formTitleHeader').innerHTML = `<i class="fa-solid fa-pen-to-square mr-2"></i> Editando: ${p.title}`;
-            document.getElementById('saveBtnSubmit').textContent = "Atualizar Molde";
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        window.resetAdminForm = function() {
-            document.getElementById('editProductId').value = "";
-            document.querySelector('#adminTab form').reset();
-            document.getElementById('formTitleHeader').innerHTML = `<i class="fa-solid fa-plus-circle mr-2"></i> Cadastrar Novo Molde / Marca`;
-            document.getElementById('saveBtnSubmit').textContent = "Salvar e Sincronizar";
-            document.getElementById('cancelEditBtn').classList.add('hidden');
-            document.getElementById('customCategoryContainer').classList.add('hidden');
-        }
-
-        window.addToCart = function(id) {
-            const item = window.products.find(p => String(p.id) === String(id));
-            if (item && !window.cart.includes(item)) {
-                window.cart.push(item);
-                updateCartBadge();
-                showToast("Adicionado ao carrinho!");
-            }
-        }
-
-        window.updateCartBadge = function() {
-            const badge = document.getElementById('cartCount');
-            if(badge) badge.textContent = window.cart.length;
-        }
-
-        window.toggleCartDrawer = function() {
-            const drawer = document.getElementById('cartDrawer');
-            if(!drawer) return;
-            drawer.classList.toggle('hidden');
-            if (!drawer.classList.contains('hidden')) {
-                const list = document.getElementById('cartItemsList');
-                const totalEl = document.getElementById('cartTotal');
-                const total = window.cart.reduce((acc, i) => acc + Number(i.price), 0);
-                
-                list.innerHTML = window.cart.map(i => `
-                    <div class="flex items-center justify-between p-2.5 bg-zinc-900 rounded-xl border border-zinc-800 text-xs">
-                        <span class="font-bold text-white truncate max-w-[180px]">${i.title}</span>
-                        <span class="text-gold-400 font-bold">R$ ${Number(i.price).toFixed(2)}</span>
-                    </div>
-                `).join('') || '<p class="text-xs text-zinc-500 text-center py-4">Carrinho vazio.</p>';
-
-                totalEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-            }
-        }
-
-        window.buyVipPlan = function() {
-            window.pendingVip = true;
-            document.getElementById('paymentModalPrice').textContent = `Valor: R$ ${window.vipPlanPrice.toFixed(2).replace('.', ',')} (Plano VIP Anual)`;
-            document.getElementById('paymentModal').classList.remove('hidden');
-        }
-
-        window.closePaymentModal = function() {
-            document.getElementById('paymentModal').classList.add('hidden');
-            window.pendingVip = false;
-        }
-
-        window.simulateBankWebhookApproval = function() {
-            closePaymentModal();
-            if (window.pendingVip) {
-                window.isVipUser = true;
-                window.pendingVip = false;
-                showToast("Webhook Recebido: Assinatura VIP Aprovada!");
-            } else {
-                window.cart.forEach(i => { if (!window.userDownloads.includes(i.id)) window.userDownloads.push(i.id); });
-                window.cart = [];
-                updateCartBadge();
-                showToast("Webhook Recebido: Pagamento Aprovado! Downloads liberados.");
-            }
-            switchTab('members');
-        }
-
-        window.switchTab = function(tab) {
-            ['catalogTab', 'membersTab', 'adminTab'].forEach(t => {
-                const el = document.getElementById(t);
-                if(el) el.classList.add('hidden');
-            });
-            const target = document.getElementById(tab + 'Tab');
-            if(target) target.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            if(tab === 'members') window.renderDownloadsGrid();
-            if(tab === 'admin') window.renderAdminProductsList();
-        }
-
-        window.toggleNewCategoryInput = function() {
-            const container = document.getElementById('customCategoryContainer');
-            if(container) container.classList.toggle('hidden');
-        }
-
-        window.handleSaveProduct = async function(e) {
-            e.preventDefault();
-            const editId = document.getElementById('editProductId').value;
-            const title = document.getElementById('newTitle').value;
-            const price = parseFloat(document.getElementById('newPrice').value);
-            const image = document.getElementById('newImage').value;
-            const downloadUrl = document.getElementById('newDownloadUrl').value;
-            
-            let categoryId = document.getElementById('newCategorySelect').value;
-            let categoryLabel = categoryId.toUpperCase();
-
-            const customCatEl = document.getElementById('newCustomCategory');
-            if (customCatEl && customCatEl.value.trim()) {
-                const customCat = customCatEl.value.trim();
-                categoryId = customCat.toLowerCase().replace(/\s+/g, '-');
-                categoryLabel = customCat;
-                if (!window.categories.some(c => c.id === categoryId)) {
-                    window.categories.push({ id: categoryId, name: customCat });
-                }
-            }
-
-            const productData = {
-                title,
-                category: categoryId,
-                categoryLabel,
-                price,
-                image,
-                downloadUrl,
-                badge: editId ? "Atualizado" : "Novo"
-            };
-
-            const targetId = editId ? String(editId) : String(Date.now());
-
-            if (editId) {
-                const idx = window.products.findIndex(p => String(p.id) === String(editId));
-                if(idx !== -1) {
-                    window.products[idx] = { id: editId, ...productData };
-                }
-            } else {
-                window.products.push({ id: targetId, ...productData });
-            }
-
-            window.renderProducts();
-            window.renderAdminProductsList();
-            window.resetAdminForm();
-            switchTab('catalog');
-
-            try {
-                if (db) {
-                    const docRef = doc(db, 'products', targetId);
-                    await setDoc(docRef, productData, { merge: true });
-                    showToast("Molde salvo e sincronizado no Firebase com sucesso!");
-                }
-            } catch (err) {
-                console.warn("Firestore save warning:", err);
-            }
-        }
-
-        window.deleteProduct = async function(id) {
-            if(!confirm("Tem certeza que deseja excluir este molde?")) return;
-            window.products = window.products.filter(p => String(p.id) !== String(id));
-            window.renderProducts();
-            window.renderAdminProductsList();
-            showToast("Molde excluído com sucesso!");
-            try {
-                if (db) {
-                    await deleteDoc(doc(db, 'products', String(id)));
-                }
-            } catch(err) {
-                console.warn("Firestore delete warning:", err);
-            }
-        }
-
-        window.checkoutCart = function() {
-            if(window.cart.length === 0) {
-                showToast("Seu carrinho está vazio!");
-                return;
-            }
-            toggleCartDrawer();
-            const total = window.cart.reduce((acc, i) => acc + Number(i.price), 0);
-            
-            document.getElementById('paymentModalPrice').textContent = `Valor: R$ ${total.toFixed(2).replace('.', ',')}`;
-            document.getElementById('pixCopyInput').value = `00020126580014br.gov.bcb.pix...order.${Date.now()}`;
-            document.getElementById('paymentModal').classList.remove('hidden');
-        }
-
-        window.handleSaveGatewayConfig = function(e) {
-            e.preventDefault();
-            const provider = document.getElementById('gatewayProvider').value;
-            const token = document.getElementById('gatewayToken').value;
-            localStorage.setItem('moto_gateway_provider', provider);
-            localStorage.setItem('moto_gateway_token', token);
-            showToast("Configurações do gateway salvas com sucesso!");
-        }
-
-        window.showToast = function(msg) {
-            const t = document.getElementById('toast');
-            const msgEl = document.getElementById('toastMessage');
-            if(!t || !msgEl) return;
-            msgEl.textContent = msg;
-            t.classList.remove('hidden');
-            setTimeout(() => t.classList.add('hidden'), 3500);
-        }
     </script>
 </body>
 </html>
