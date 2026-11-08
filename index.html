@@ -647,12 +647,13 @@
 
         window.triggerAdminAccess = function() {
             const pass = prompt("Digite a senha mestre do Administrador:");
+            // Garantimos que a senha padrão inicial seja 'admin123' caso não haja nenhuma salva
             const savedPass = localStorage.getItem('moto_admin_pass') || 'admin123';
             if (pass === savedPass) {
                 switchTab('admin');
                 showToast("Bem-vindo ao Painel Administrativo!");
             } else if (pass !== null) {
-                showToast("Senha incorreta!");
+                showToast("Senha incorreta! A senha padrão inicial é admin123");
             }
         }
 
