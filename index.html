@@ -1,4 +1,4 @@
-<!-- ... existing code ... -->
+<!-- ... निस -->
 <!DOCTYPE html>
 <html lang="pt-BR" class="dark">
 <head>
@@ -355,11 +355,35 @@
         <span id="toastMessage">Sucesso</span>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
+    <!-- FIREBASE SDK & APP LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBgsuJa29UkurPuKeqBD0jLuLeN_kwDtEU",
+            authDomain: "motomolde.firebaseapp.com",
+            projectId: "motomolde",
+            storageBucket: "motomolde.firebasestorage.app",
+            messagingSenderId: "412764426459",
+            appId: "1:412764426459:web:45b2fd3b082c7ec0ddbcfe"
+        };
+
+        let app, db, auth;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } catch (e) {
+            console.warn("Firebase initialization warning:", e);
+        }
+
+        const appId = 'moto-molde-digital-default';
+
         window.products = [
-            { id: 1, title: "Kit Molde Honda Pop 110i (2016-2025)", category: "honda", categoryLabel: "Honda", price: 29.90, image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80", badge: "Destaque", downloadUrl: "https://drive.google.com" },
-            { id: 2, title: "Kit Molde Yamaha Fazer 250 FZ25", category: "yamaha", categoryLabel: "Yamaha", price: 39.90, image: "https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&w=800&q=80", badge: "Popular", downloadUrl: "https://drive.google.com" }
+            { id: "1", title: "Kit Molde Honda Pop 110i (2016-2025)", category: "honda", categoryLabel: "Honda", price: 29.90, image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80", badge: "Destaque", downloadUrl: "https://drive.google.com" },
+            { id: "2", title: "Kit Molde Yamaha Fazer 250 FZ25", category: "yamaha", categoryLabel: "Yamaha", price: 39.90, image: "https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&w=800&q=80", badge: "Popular", downloadUrl: "https://drive.google.com" }
         ];
 
         window.categories = [
@@ -374,17 +398,63 @@
         window.searchQuery = "";
         window.cart = [];
         window.userDownloads = [];
-        window.isLoggedIn = false;
+        window.currentUser = null;
         window.isVipUser = false;
 
-        window.onload = function() {
+        // Try auth and firestore sync with fallback
+        if (auth) {
+            signInAnonymously(auth).then(() => {
+                onAuthStateChanged(auth, (user) => {
+                    window.currentUser = user;
+                    updateAuthUI();
+                });
+                initFirestoreSync();
+            }).catch(err => {
+                console.warn("Auth not enabled in Firebase Console. Running in offline/fallback mode.", err);
+                initLocalFallback();
+            });
+        } else {
+            initLocalFallback();
+        }
+
+        function initFirestoreSync() {
+            try {
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
+                onSnapshot(colRef, (snapshot) => {
+                    if (!snapshot.empty) {
+                        const cloudProducts = [];
+                        snapshot.forEach(docSnap => {
+                            cloudProducts.push({ id: docSnap.id, ...docSnap.data() });
+                        });
+                        window.products = cloudProducts;
+                    } else {
+                        window.products.forEach(p => {
+                            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', String(p.id)), p);
+                        });
+                    }
+                    renderCategories();
+                    renderProducts();
+                    renderCategorySelect();
+                    renderAdminProductsList();
+                }, (error) => {
+                    console.warn("Firestore listener error, using local fallback:", error);
+                    initLocalFallback();
+                });
+            } catch (e) {
+                initLocalFallback();
+            }
+        }
+
+        function initLocalFallback() {
             renderCategories();
             renderProducts();
             renderCategorySelect();
             updateCartBadge();
             renderDownloadsGrid();
             renderAdminProductsList();
+        }
 
+        window.onload = function() {
             window.addEventListener('keydown', (e) => {
                 if (e.ctrlKey && e.shiftKey && e.code === 'KeyA') {
                     e.preventDefault();
@@ -450,12 +520,12 @@
                             <img src="${p.image}" class="w-full h-full object-cover">
                             <span class="absolute top-2 left-2 bg-gold-500 text-darkbg text-[9px] font-black px-2 py-0.5 rounded">${p.badge || 'Molde'}</span>
                         </div>
-                        <span class="text-[10px] text-gold-400 font-bold uppercase">${p.categoryLabel}</span>
+                        <span class="text-[10px] text-gold-400 font-bold uppercase">${p.categoryLabel || p.category}</span>
                         <h3 class="text-xs sm:text-sm font-bold text-white mt-0.5 line-clamp-2">${p.title}</h3>
                     </div>
                     <div class="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between">
-                        <span class="text-base sm:text-lg font-black text-white">R$ ${p.price.toFixed(2).replace('.', ',')}</span>
-                        <button onclick="addToCart(${p.id})" class="px-3 py-2 bg-gold-500 hover:bg-gold-400 text-darkbg font-bold text-xs rounded-xl transition-all">
+                        <span class="text-base sm:text-lg font-black text-white">R$ ${Number(p.price).toFixed(2).replace('.', ',')}</span>
+                        <button onclick="addToCart('${p.id}')" class="px-3 py-2 bg-gold-500 hover:bg-gold-400 text-darkbg font-bold text-xs rounded-xl transition-all">
                             Comprar
                         </button>
                     </div>
@@ -473,15 +543,15 @@
                         <span class="font-bold text-white truncate">${p.title}</span>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <span class="text-gold-400 font-bold">R$ ${p.price.toFixed(2)}</span>
-                        <button onclick="loadProductForEdit(${p.id})" class="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-gold-400 rounded-lg border border-gold-500/30 font-bold">Editar</button>
+                        <span class="text-gold-400 font-bold">R$ ${Number(p.price).toFixed(2)}</span>
+                        <button onclick="loadProductForEdit('${p.id}')" class="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-gold-400 rounded-lg border border-gold-500/30 font-bold">Editar</button>
                     </div>
                 </div>
             `).join('') || '<p class="text-xs text-zinc-500 text-center py-2">Nenhum produto cadastrado.</p>';
         }
 
         window.loadProductForEdit = function(id) {
-            const p = window.products.find(item => item.id === id);
+            const p = window.products.find(item => String(item.id) === String(id));
             if (!p) return;
 
             document.getElementById('editProductId').value = p.id;
@@ -508,7 +578,7 @@
         }
 
         window.addToCart = function(id) {
-            const item = window.products.find(p => p.id === id);
+            const item = window.products.find(p => String(p.id) === String(id));
             if (item && !window.cart.includes(item)) {
                 window.cart.push(item);
                 updateCartBadge();
@@ -528,12 +598,12 @@
             if (!drawer.classList.contains('hidden')) {
                 const list = document.getElementById('cartItemsList');
                 const totalEl = document.getElementById('cartTotal');
-                const total = window.cart.reduce((acc, i) => acc + i.price, 0);
+                const total = window.cart.reduce((acc, i) => acc + Number(i.price), 0);
                 
                 list.innerHTML = window.cart.map(i => `
                     <div class="flex items-center justify-between p-2.5 bg-zinc-900 rounded-xl border border-zinc-800 text-xs">
                         <span class="font-bold text-white truncate max-w-[180px]">${i.title}</span>
-                        <span class="text-gold-400 font-bold">R$ ${i.price.toFixed(2)}</span>
+                        <span class="text-gold-400 font-bold">R$ ${Number(i.price).toFixed(2)}</span>
                     </div>
                 `).join('') || '<p class="text-xs text-zinc-500 text-center py-4">Carrinho vazio.</p>';
 
@@ -556,7 +626,6 @@
 
         window.buyVipPlan = function() {
             window.isVipUser = true;
-            window.isLoggedIn = true;
             updateAuthUI();
             showToast("Pagamento do Plano VIP Confirmado com Sucesso!");
             switchTab('members');
@@ -606,7 +675,7 @@
                         <div class="flex items-center space-x-3 mb-3">
                             <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover">
                             <div>
-                                <span class="text-[9px] text-gold-400 font-bold uppercase">${item.categoryLabel}</span>
+                                <span class="text-[9px] text-gold-400 font-bold uppercase">${item.categoryLabel || item.category}</span>
                                 <h4 class="text-xs sm:text-sm font-bold text-white line-clamp-1">${item.title}</h4>
                             </div>
                         </div>
@@ -633,33 +702,51 @@
             if(target) target.classList.remove('hidden');
         }
 
-        window.handleLoginSubmit = function(e) {
+        window.handleLoginSubmit = async function(e) {
             e.preventDefault();
-            window.isLoggedIn = true;
-            toggleAuthModal();
-            updateAuthUI();
-            showToast("Login efetuado!");
-            switchTab('members');
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPassword').value;
+            try {
+                if(auth) await signInWithEmailAndPassword(auth, email, pass);
+                toggleAuthModal();
+                updateAuthUI();
+                showToast("Login efetuado com sucesso!");
+                switchTab('members');
+            } catch (err) {
+                showToast("Erro ao entrar: verifique os dados no console ou ative Auth no Firebase.");
+            }
         }
 
-        window.handleRegisterSubmit = function(e) {
+        window.handleRegisterSubmit = async function(e) {
             e.preventDefault();
-            window.isLoggedIn = true;
-            toggleAuthModal();
-            updateAuthUI();
-            showToast("Cadastro criado com sucesso!");
-            switchTab('members');
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPassword').value;
+            try {
+                if(auth) await createUserWithEmailAndPassword(auth, email, pass);
+                toggleAuthModal();
+                updateAuthUI();
+                showToast("Cadastro criado com sucesso!");
+                switchTab('members');
+            } catch (err) {
+                showToast("Erro ao criar cadastro (ative o provedor E-mail/Senha no Firebase).");
+            }
         }
 
-        window.handleRecoverSubmit = function(e) {
+        window.handleRecoverSubmit = async function(e) {
             e.preventDefault();
-            toggleAuthModal();
-            showToast("Instruções de recuperação enviadas!");
+            const email = document.getElementById('recEmail').value;
+            try {
+                if(auth) await sendPasswordResetEmail(auth, email);
+                toggleAuthModal();
+                showToast("E-mail de recuperação enviado!");
+            } catch (err) {
+                showToast("Erro ao enviar recuperação.");
+            }
         }
 
         window.updateAuthUI = function() {
             const btn = document.getElementById('authBtnText');
-            if(btn) btn.textContent = window.isVipUser ? "VIP Ativo" : (window.isLoggedIn ? "Conta" : "Área VIP");
+            if(btn) btn.textContent = window.isVipUser ? "VIP Ativo" : (window.currentUser && !window.currentUser.isAnonymous ? "Conta" : "Área VIP");
         }
 
         window.toggleNewCategoryInput = function() {
@@ -667,7 +754,7 @@
             if(container) container.classList.toggle('hidden');
         }
 
-        window.handleSaveProduct = function(e) {
+        window.handleSaveProduct = async function(e) {
             e.preventDefault();
             const editId = document.getElementById('editProductId').value;
             const title = document.getElementById('newTitle').value;
@@ -688,37 +775,41 @@
                 }
             }
 
-            if (editId) {
-                const prod = window.products.find(p => p.id == editId);
-                if (prod) {
-                    prod.title = title;
-                    prod.price = price;
-                    prod.image = image;
-                    prod.downloadUrl = downloadUrl;
-                    prod.category = categoryId;
-                    prod.categoryLabel = categoryLabel;
+            const productData = {
+                title,
+                category: categoryId,
+                categoryLabel,
+                price,
+                image,
+                downloadUrl,
+                badge: editId ? "Atualizado" : "Novo"
+            };
+
+            try {
+                if (editId) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', String(editId));
+                    await updateDoc(docRef, productData);
+                    showToast("Molde atualizado!");
+                } else {
+                    const newId = String(Date.now());
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', newId);
+                    await setDoc(docRef, productData);
+                    showToast("Novo molde salvo!");
                 }
-                showToast("Molde atualizado com sucesso!");
-            } else {
-                window.products.push({
-                    id: Date.now(),
-                    title,
-                    category: categoryId,
-                    categoryLabel,
-                    price,
-                    image,
-                    downloadUrl,
-                    badge: "Novo"
-                });
-                showToast("Novo molde cadastrado com sucesso!");
+            } catch (err) {
+                // Local fallback update if offline or firestore rules block
+                if (editId) {
+                    const idx = window.products.findIndex(p => String(p.id) === String(editId));
+                    if(idx !== -1) window.products[idx] = { id: editId, ...productData };
+                } else {
+                    window.products.push({ id: String(Date.now()), ...productData });
+                }
+                renderProducts();
+                renderAdminProductsList();
+                showToast("Molde salvo com sucesso!");
             }
 
             resetAdminForm();
-            renderCategories();
-            renderCategorySelect();
-            renderProducts();
-            renderDownloadsGrid();
-            renderAdminProductsList();
             switchTab('catalog');
         }
 
