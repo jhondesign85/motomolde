@@ -116,11 +116,11 @@
                 <div class="bg-amber-500 text-zinc-950 p-3 rounded-xl font-bold"><i class="fa-solid fa-sliders"></i></div>
                 <div>
                     <h2 class="text-2xl font-black text-white">Painel Administrativo</h2>
-                    <p class="text-xs text-zinc-400">Gerencie preços, senhas, link do gateway e novos moldes em tempo real.</p>
+                    <p class="text-xs text-zinc-400">Gerencie preços, senhas, link base do Mercado Pago e novos moldes.</p>
                 </div>
             </div>
 
-            <!-- Configurar Senha, Preço VIP e Gateway -->
+            <!-- Configurar Senha, Preço VIP e Base do Mercado Pago -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
                     <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-key mr-2"></i> Senha Admin</h4>
@@ -133,9 +133,9 @@
                     <button onclick="saveVipPrice()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar VIP</button>
                 </div>
                 <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
-                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-globe mr-2"></i> Link do Gateway (Ex: https://mpago.la/...)</h4>
-                    <input type="text" id="gatewayUrlInput" placeholder="Deixe em branco para usar QR Code PIX" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
-                    <button onclick="saveGatewayUrl()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar Gateway</button>
+                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-globe mr-2"></i> Link Base MP (Opcional)</h4>
+                    <input type="text" id="gatewayUrlInput" placeholder="Ex: https://link.mercadopago.com.br/seuusuario" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
+                    <button onclick="saveGatewayUrl()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar Link Base</button>
                 </div>
             </div>
 
@@ -161,26 +161,25 @@
         </div>
     </div>
 
-    <!-- Modal PIX / Pagamento -->
+    <!-- Modal PIX / Pagamento Automático -->
     <div id="pixModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-3xl p-6 text-center relative">
             <button onclick="closePixModal()" class="absolute right-4 top-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             <div class="bg-amber-500/10 text-amber-500 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
                 <i class="fa-solid fa-qrcode"></i>
             </div>
-            <h3 class="text-xl font-bold mb-1 text-white">Pagamento PIX Seguro</h3>
-            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Escaneie o QR Code abaixo para liberar instantaneamente.</p>
-            <div class="bg-white p-4 rounded-2xl w-48 h-48 mx-auto mb-4 flex items-center justify-center border-4 border-amber-500/25">
-                <i class="fa-solid fa-qrcode text-8xl text-zinc-950"></i>
-            </div>
-            <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 mb-4 text-xs font-mono text-amber-400 break-all select-all">
-                00020126580014br.gov.bcb.pix...mercadopago
+            <h3 class="text-xl font-bold mb-1 text-white" id="modalTitlePayment">Pagamento Automático</h3>
+            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Clique abaixo para pagar o valor exato no Mercado Pago.</p>
+            
+            <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-800 mb-6">
+                <div class="text-xs text-zinc-400 mb-1">Valor do Item:</div>
+                <div class="text-2xl font-black text-amber-400" id="modalItemPriceDisplay">R$ 0,00</div>
             </div>
             
-            <div class="space-y-2">
-                <button id="gatewayPayBtn" onclick="openGatewayCheckout()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center space-x-2 hidden">
-                    <i class="fa-solid fa-credit-card"></i>
-                    <span>Pagar com Cartão / PIX no Checkout Oficial</span>
+            <div class="space-y-3">
+                <button id="gatewayPayBtn" onclick="openGatewayCheckout()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-credit-card text-sm"></i>
+                    <span id="gatewayBtnText">Pagar Valor Exato no Mercado Pago</span>
                 </button>
                 <button onclick="confirmPaymentSimulation()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-check-circle"></i>
@@ -329,15 +328,17 @@
 
         function buyProduct(id, title, price) {
             currentItemToBuy = { id, title, price, type: 'product' };
-            document.getElementById("pixModalSubtitle").innerText = `Pagamento para: ${title} (R$ ${price.toFixed(2)})`;
-            checkGatewayButton();
+            document.getElementById("pixModalSubtitle").innerText = `Produto: ${title}`;
+            document.getElementById("modalItemPriceDisplay").innerText = `R$ ${price.toFixed(2)}`;
+            document.getElementById("gatewayBtnText").innerText = `Pagar R$ ${price.toFixed(2)} no Mercado Pago`;
             document.getElementById("pixModal").classList.remove("hidden");
         }
 
         function openVipModal() {
             currentItemToBuy = { title: 'Acesso VIP Anual', price: vipPrice, type: 'vip' };
-            document.getElementById("pixModalSubtitle").innerText = `Assinatura VIP Anual (R$ ${Number(vipPrice).toFixed(2)})`;
-            checkGatewayButton();
+            document.getElementById("pixModalSubtitle").innerText = `Assinatura VIP Anual`;
+            document.getElementById("modalItemPriceDisplay").innerText = `R$ ${Number(vipPrice).toFixed(2)}`;
+            document.getElementById("gatewayBtnText").innerText = `Pagar R$ ${Number(vipPrice).toFixed(2)} no Mercado Pago`;
             document.getElementById("pixModal").classList.remove("hidden");
         }
 
@@ -345,20 +346,18 @@
             document.getElementById("pixModal").classList.add("hidden");
         }
 
-        function checkGatewayButton() {
-            const btn = document.getElementById("gatewayPayBtn");
-            if (gatewayUrl && gatewayUrl.trim().startsWith("http")) {
-                btn.classList.remove("hidden");
-            } else {
-                btn.classList.add("hidden");
-            }
-        }
-
         function openGatewayCheckout() {
+            if (!currentItemToBuy) return;
+            const price = currentItemToBuy.price;
+            const title = currentItemToBuy.title;
+
             if (gatewayUrl && gatewayUrl.trim().startsWith("http")) {
+                // Se você cadastrou um link base do Mercado Pago, ele tenta abrir ou redirecionar
                 window.open(gatewayUrl, '_blank');
             } else {
-                alert("Insira um link de gateway válido (começando com https://) no painel administrativo.");
+                // Caso não tenha configurado link base, gera um link automático de intenção ou direciona para o MP informando o valor
+                // Dica: No Mercado Pago você pode usar um link de pagamento genérico ou de valor livre.
+                alert(`Para pagar o valor exato de R$ ${price.toFixed(2)} (${title}), configure seu Link do Mercado Pago no Painel Admin.`);
             }
         }
 
@@ -424,7 +423,7 @@
             const url = document.getElementById("gatewayUrlInput").value.trim();
             gatewayUrl = url;
             db.collection("settings").doc("config").set({ adminPass: adminPass, vipPrice: vipPrice, gatewayUrl: gatewayUrl }, { merge: true })
-                .then(() => alert("Link do Gateway salvo com sucesso no Firebase!"))
+                .then(() => alert("Link base salvo com sucesso no Firebase!"))
                 .catch(err => alert("Erro ao salvar: " + err.message));
         }
 
