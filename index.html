@@ -463,9 +463,14 @@
                 }
             });
 
-            if(window.location.hash === '#admin') {
+            // Check URL hash for admin access
+            if(window.location.hash === '#admin' || window.location.search.includes('admin')) {
                 const pass = prompt("Senha mestre admin:");
-                if (pass === "admin123") switchTab('admin');
+                if (pass === "admin123") {
+                    switchTab('admin');
+                } else {
+                    window.location.hash = '';
+                }
             }
         };
 
