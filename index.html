@@ -207,7 +207,7 @@
                 </div>
                 
                 <!-- CHANGE ADMIN PASSWORD SECTION -->
-                <div class="bg-zinc-900/90 p-4 sm:p-6 rounded-xl border border-zinc-800">
+                <div class="bg-zinc-900/90 p-4 sm:p-6 rounded-xl border border-gold-500/30">
                     <h3 class="text-sm font-bold text-gold-400 mb-2"><i class="fa-solid fa-key mr-2"></i> Alterar Senha do Administrador</h3>
                     <p class="text-xs text-zinc-400 mb-4">Defina uma nova senha mestre para proteger o seu painel de acesso secreto.</p>
                     <form onsubmit="handleSaveNewAdminPassword(event)" class="space-y-3">
@@ -221,16 +221,7 @@
                                 <input type="password" id="confirmAdminPass" required placeholder="Confirme a senha" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white">
                             </div>
                         </div>
-                        <button type="submit" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-gold-400 font-bold text-xs rounded-xl border border-gold-500/30">Atualizar Senha Admin</button>
-                    </form>
-                </div>
-
-                <!-- GATEWAY & PAYMENT SETTINGS -->
-                        <div>
-                            <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">URL de Webhook (Notificação de Pagamento)</label>
-                            <input type="text" id="webhookUrl" readonly value="https://moto-molde-digital.vercel.app/api/webhook" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-500 font-mono">
-                        </div>
-                        <button type="submit" class="px-4 py-2.5 bg-gold-500 hover:bg-gold-400 text-darkbg font-extrabold text-xs rounded-xl shadow">Salvar Credenciais do Gateway</button>
+                        <button type="submit" class="px-4 py-2 bg-gold-500 hover:bg-gold-400 text-darkbg font-extrabold text-xs rounded-xl shadow">Atualizar Senha Admin</button>
                     </form>
                 </div>
 
