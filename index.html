@@ -387,8 +387,7 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'motomolde-default';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+        const firebaseConfig = {
             apiKey: "AIzaSyBgsuJa29UkurPuKeqBD0jLuLeN_kwDtEU",
             authDomain: "motomolde.firebaseapp.com",
             projectId: "motomolde",
@@ -575,7 +574,8 @@
                     window.currentUser = user;
                 });
                 
-                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
+                // CONEXÃO DIRETA NA COLEÇÃO "products" DO FIRESTORE
+                const colRef = collection(db, 'products');
                 onSnapshot(colRef, (snapshot) => {
                     const cloudProducts = [];
                     snapshot.forEach(docSnap => {
@@ -583,6 +583,11 @@
                     });
                     if (cloudProducts.length > 0) {
                         window.products = cloudProducts;
+                    } else {
+                        // Se estiver vazio no Firebase, grava os iniciais
+                        window.products.forEach(async (p) => {
+                            await setDoc(doc(db, 'products', String(p.id)), p);
+                        });
                     }
                     initLocalFallback();
                 }, (error) => {
@@ -823,9 +828,9 @@
 
             try {
                 if (db) {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', targetId);
+                    const docRef = doc(db, 'products', targetId);
                     await setDoc(docRef, productData, { merge: true });
-                    showToast("Molde salvo e sincronizado com sucesso!");
+                    showToast("Molde salvo e sincronizado no Firebase com sucesso!");
                 }
             } catch (err) {
                 console.warn("Firestore save warning:", err);
