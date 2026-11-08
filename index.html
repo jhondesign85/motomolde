@@ -88,9 +88,9 @@
                         <span id="cartCount" class="absolute -top-1 -right-1 bg-gold-500 text-darkbg text-[10px] sm:text-xs font-black rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center shadow-md">0</span>
                     </button>
 
-                    <button onclick="toggleAuthModal()" class="px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-600 text-darkbg font-extrabold text-xs sm:text-sm transition-all flex items-center space-x-1.5 shadow-lg shadow-gold-500/20">
+                    <button onclick="switchTab('members')" class="px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-600 text-darkbg font-extrabold text-xs sm:text-sm transition-all flex items-center space-x-1.5 shadow-lg shadow-gold-500/20">
                         <i class="fa-solid fa-crown"></i>
-                        <span id="authBtnText">Área VIP</span>
+                        <span>Área VIP</span>
                     </button>
                 </div>
             </div>
@@ -134,7 +134,7 @@
                     <div>
                         <span class="text-xs font-bold text-gold-400 uppercase tracking-widest bg-gold-500/10 px-3 py-1 rounded-full">Plano Anual Exclusivo</span>
                         <h3 class="text-xl sm:text-2xl font-black text-white mt-2">Tenha Acesso VIP a Todo o Acervo de Moldes</h3>
-                        <p class="text-xs sm:text-sm text-zinc-400 mt-1">Assine agora por apenas <strong class="text-white">R$ 147,00/ano</strong>. O acesso só é liberado após confirmação bancária do PIX/Cartão.</p>
+                        <p class="text-xs sm:text-sm text-zinc-400 mt-1">Assine agora por apenas <strong class="text-white vipPriceDisplay">R$ 147,00/ano</strong>. O acesso só é liberado após confirmação bancária do PIX/Cartão.</p>
                     </div>
                     <button onclick="buyVipPlan()" class="w-full md:w-auto px-6 py-4 bg-gradient-to-r from-gold-400 to-gold-600 text-darkbg font-black rounded-xl text-xs sm:text-sm shadow-lg hover:scale-105 transition-all flex items-center justify-center space-x-2 flex-shrink-0">
                         <i class="fa-solid fa-crown"></i>
@@ -168,7 +168,6 @@
                 </div>
             </div>
 
-            <!-- LOCKED AREA NOTICE IF NOT VIP OR NO PURCHASES -->
             <div id="lockedVipNotice" class="text-center py-16 bg-cardbg rounded-2xl border border-zinc-800 p-6 space-y-4">
                 <div class="w-14 h-14 bg-zinc-800 text-gold-400 rounded-full flex items-center justify-center mx-auto text-2xl border border-gold-500/30">
                     <i class="fa-solid fa-lock"></i>
@@ -176,7 +175,7 @@
                 <h3 class="text-lg sm:text-xl font-bold text-white">Área VIP Bloqueada (Pagamento Pendente)</h3>
                 <p class="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto">O acesso aos downloads e arquivos CDR/PDF é restrito e só é liberado estritamente após a confirmação bancária do pagamento.</p>
                 <div class="pt-2 flex flex-col sm:flex-row justify-center gap-3">
-                    <button onclick="buyVipPlan()" class="px-6 py-3 bg-gold-500 text-darkbg font-extrabold text-xs rounded-xl shadow">Pagar Plano VIP (R$ 147,00)</button>
+                    <button onclick="buyVipPlan()" class="px-6 py-3 bg-gold-500 text-darkbg font-extrabold text-xs rounded-xl shadow">Pagar Plano VIP (<span class="vipPriceDisplay">R$ 147,00</span>)</button>
                     <button onclick="switchTab('catalog')" class="px-6 py-3 bg-zinc-800 text-zinc-300 font-bold text-xs rounded-xl border border-zinc-700">Comprar Moldes Avulsos</button>
                 </div>
             </div>
@@ -236,6 +235,19 @@
                             </div>
                         </div>
                         <button type="submit" class="px-4 py-2 bg-gold-500 hover:bg-gold-400 text-darkbg font-extrabold text-xs rounded-xl shadow">Atualizar Senha Admin</button>
+                    </form>
+                </div>
+
+                <!-- VIP PRICE CONFIGURATION SECTION -->
+                <div class="bg-zinc-900/90 p-4 sm:p-6 rounded-xl border border-gold-500/30">
+                    <h3 class="text-sm font-bold text-gold-400 mb-2"><i class="fa-solid fa-crown mr-2"></i> Configurar Preço do Plano VIP</h3>
+                    <p class="text-xs text-zinc-400 mb-4">Altere o valor da assinatura VIP anual exibido no site e nos botões de pagamento.</p>
+                    <form onsubmit="handleSaveVipPrice(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">Novo Valor Anual (R$)</label>
+                            <input type="number" step="0.01" id="vipPriceInput" required placeholder="147.00" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white">
+                        </div>
+                        <button type="submit" class="px-4 py-2 bg-gold-500 hover:bg-gold-400 text-darkbg font-extrabold text-xs rounded-xl shadow">Salvar Preço VIP</button>
                     </form>
                 </div>
 
@@ -335,97 +347,48 @@
             <h3 class="text-lg font-black text-white">Aguardando Pagamento PIX</h3>
             <p class="text-xs text-zinc-400">Escaneie o QR Code ou copie a chave abaixo. Os downloads permanecerão bloqueados até que o gateway confirme o pagamento.</p>
 
-            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex justify-center">
-                <div class="w-40 h-40 bg-white p-2 rounded-lg flex items-center justify-center">
-                    <i class="fa-solid fa-qrcode text-8xl text-black"></i>
+            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 inline-block">
+                <div class="w-36 h-36 bg-white rounded-lg mx-auto flex items-center justify-center p-2">
+                    <svg viewBox="0 0 100 100" class="w-full h-full text-black">
+                        <rect width="100" height="100" fill="white"/>
+                        <rect x="10" y="10" width="30" height="30" fill="black"/>
+                        <rect x="60" y="10" width="30" height="30" fill="black"/>
+                        <rect x="10" y="60" width="30" height="30" fill="black"/>
+                        <rect x="45" y="45" width="15" height="15" fill="black"/>
+                        <rect x="70" y="70" width="20" height="20" fill="black"/>
+                    </svg>
                 </div>
             </div>
 
-            <div>
-                <span id="paymentModalPrice" class="text-base font-bold text-gold-400 block mb-2">Valor: R$ 0,00</span>
-                <label class="block text-[10px] uppercase font-bold text-zinc-400 mb-1">PIX Copia e Cola</label>
-                <input type="text" readonly id="pixCopyInput" value="00020126580014br.gov.bcb.pix...moto-molde-digital-gateway" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-[11px] text-zinc-300 text-center select-all">
+            <div id="paymentModalPrice" class="text-sm font-bold text-gold-400">Valor: R$ 0,00</div>
+
+            <div class="relative">
+                <input type="text" id="pixCopyInput" readonly value="00020126580014br.gov.bcb.pix..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl py-2 pl-3 pr-10 text-[10px] text-zinc-300 font-mono">
             </div>
 
-            <div class="pt-2 space-y-2">
-                <button onclick="simulateBankWebhookApproval()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow-lg flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-check-double"></i>
-                    <span>Simular Webhook / Confirmação do Banco</span>
-                </button>
-                <button onclick="closePaymentModal()" class="w-full py-2 bg-zinc-800 text-zinc-400 hover:text-white text-xs font-bold rounded-xl">
-                    Fechar (Manter Bloqueado)
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- AUTHENTICATION / VIP LOGIN MODAL -->
-    <div id="authModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-cardbg border border-zinc-700 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-
-            <div class="flex border-b border-zinc-800 mb-5">
-                <button onclick="switchAuthTab('login')" id="authTabLoginBtn" class="flex-1 pb-3 text-xs sm:text-sm font-bold text-gold-400 border-b-2 border-gold-400">Entrar</button>
-                <button onclick="switchAuthTab('register')" id="authTabRegBtn" class="flex-1 pb-3 text-xs sm:text-sm font-semibold text-zinc-400">Criar Cadastro</button>
-                <button onclick="switchAuthTab('recover')" id="authTabRecBtn" class="flex-1 pb-3 text-xs sm:text-sm font-semibold text-zinc-400">Recuperar</button>
-            </div>
-
-            <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="space-y-3">
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">E-mail</label>
-                    <input type="email" id="loginEmail" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">Senha</label>
-                    <input type="password" id="loginPassword" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white">
-                </div>
-                <button type="submit" class="w-full py-3 bg-gold-500 hover:bg-gold-400 text-darkbg font-bold text-xs sm:text-sm rounded-xl mt-2">Acessar Área VIP</button>
-            </form>
-
-            <form id="registerForm" onsubmit="handleRegisterSubmit(event)" class="space-y-3 hidden">
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">Nome Completo</label>
-                    <input type="text" id="regName" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">WhatsApp</label>
-                    <input type="text" id="regPhone" required placeholder="(00) 00000-0000" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">E-mail</label>
-                    <input type="email" id="regEmail" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">Criar Senha</label>
-                    <input type="password" id="regPassword" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white">
-                </div>
-                <button type="submit" class="w-full py-3 bg-gold-500 hover:bg-gold-400 text-darkbg font-bold text-xs sm:text-sm rounded-xl mt-2">Criar Cadastro</button>
-            </form>
-
-            <form id="recoverForm" onsubmit="handleRecoverSubmit(event)" class="space-y-3 hidden">
-                <p class="text-xs text-zinc-400 mb-2">Digite seu e-mail cadastrado para receber as instruções de recuperação de senha.</p>
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-400 uppercase mb-1">E-mail</label>
-                    <input type="email" id="recEmail" required class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white">
-                </div>
-                <button type="submit" class="w-full py-3 bg-zinc-800 text-gold-400 border border-gold-500/40 font-bold text-xs sm:text-sm rounded-xl mt-2">Enviar E-mail de Recuperação</button>
-            </form>
+            <button onclick="simulateBankWebhookApproval()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow-lg transition-all">
+                <i class="fa-solid fa-check-circle mr-2"></i> Simular Webhook / Confirmação do Banco
+            </button>
+            <button onclick="closePaymentModal()" class="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 text-xs font-bold rounded-xl">
+                Fechar (Manter Bloqueado)
+            </button>
         </div>
     </div>
 
     <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-4 right-4 z-50 hidden bg-zinc-900 border border-gold-500 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-2 text-xs sm:text-sm">
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-zinc-900 border border-gold-500/60 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-2">
         <i class="fa-solid fa-circle-check text-gold-400"></i>
-        <span id="toastMessage">Sucesso</span>
+        <span id="toastMessage" class="text-xs font-bold">Aviso</span>
     </div>
 
-    <!-- FIREBASE SDK & APP LOGIC -->
+    <!-- FIREBASE & CORE SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = {
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'motomolde-default';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             apiKey: "AIzaSyBgsuJa29UkurPuKeqBD0jLuLeN_kwDtEU",
             authDomain: "motomolde.firebaseapp.com",
             projectId: "motomolde",
@@ -440,22 +403,39 @@
             db = getFirestore(app);
             auth = getAuth(app);
         } catch (e) {
-            console.warn("Firebase initialization warning:", e);
+            console.warn("Firebase init warning:", e);
         }
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'moto-molde-digital-default';
-
-        window.products = [
-            { id: "1", title: "Kit Molde Honda Pop 110i (2016-2025)", category: "honda", categoryLabel: "Honda", price: 29.90, image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80", badge: "Destaque", downloadUrl: "https://drive.google.com" },
-            { id: "2", title: "Kit Molde Yamaha Fazer 250 FZ25", category: "yamaha", categoryLabel: "Yamaha", price: 39.90, image: "https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&w=800&q=80", badge: "Popular", downloadUrl: "https://drive.google.com" }
+        window.categories = [
+            { id: "all", name: "Todas as Motos" },
+            { id: "pop", name: "Honda Pop" },
+            { id: "biz", name: "Honda Biz" },
+            { id: "titan", name: "Titan / Fan / Start" },
+            { id: "bros", name: "Honda Bros" },
+            { id: "fazer", name: "Yamaha Fazer" }
         ];
 
-        window.categories = [
-            { id: "all", name: "Todas" },
-            { id: "honda", name: "Honda" },
-            { id: "yamaha", name: "Yamaha" },
-            { id: "suzuki", name: "Suzuki" },
-            { id: "kawasaki", name: "Kawasaki" }
+        window.products = [
+            {
+                id: "1",
+                title: "Kit Molde Honda Pop 110i (2016-2025)",
+                category: "pop",
+                categoryLabel: "Honda Pop",
+                price: 29.90,
+                image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80",
+                badge: "Mais Vendido",
+                downloadUrl: "https://drive.google.com"
+            },
+            {
+                id: "2",
+                title: "Kit Molde Yamaha Fazer 250 FZ25",
+                category: "fazer",
+                categoryLabel: "Yamaha Fazer",
+                price: 39.90,
+                image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=800&q=80",
+                badge: "Novo",
+                downloadUrl: "https://drive.google.com"
+            }
         ];
 
         window.activeCategory = "all";
@@ -465,97 +445,7 @@
         window.currentUser = null;
         window.isVipUser = false;
         window.pendingVip = false;
-
-        if (auth) {
-            signInAnonymously(auth).then(() => {
-                onAuthStateChanged(auth, (user) => {
-                    window.currentUser = user;
-                    updateAuthUI();
-                });
-                initFirestoreSync();
-            }).catch(err => {
-                console.warn("Auth anonymous sign-in failed, using fallback:", err);
-                initLocalFallback();
-            });
-        } else {
-            initLocalFallback();
-        }
-
-        function initFirestoreSync() {
-            try {
-                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
-                onSnapshot(colRef, (snapshot) => {
-                    const cloudProducts = [];
-                    snapshot.forEach(docSnap => {
-                        cloudProducts.push({ id: docSnap.id, ...docSnap.data() });
-                    });
-                    
-                    if (cloudProducts.length > 0) {
-                        window.products = cloudProducts;
-                    } else {
-                        window.products.forEach(p => {
-                            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', String(p.id)), p);
-                        });
-                    }
-                    renderCategories();
-                    renderProducts();
-                    renderCategorySelect();
-                    renderAdminProductsList();
-                }, (error) => {
-                    console.error("Firestore snapshot error:", error);
-                    initLocalFallback();
-                });
-            } catch (e) {
-                console.error("Firestore init error:", e);
-                initLocalFallback();
-            }
-        }
-
-        function initLocalFallback() {
-            renderCategories();
-            renderProducts();
-            renderCategorySelect();
-            updateCartBadge();
-            renderDownloadsGrid();
-            renderAdminProductsList();
-        }
-
-        window.onload = function() {
-            window.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && e.shiftKey && e.code === 'KeyA') {
-                    e.preventDefault();
-                    triggerAdminAccess();
-                }
-            });
-
-            if(window.location.hash === '#admin' || window.location.search.includes('admin')) {
-                triggerAdminAccess();
-            }
-        };
-
-        function triggerAdminAccess() {
-            const currentMasterPass = localStorage.getItem('moto_admin_custom_pass') || "admin123";
-            const pass = prompt("Digite a senha mestre do painel admin:");
-            if (pass === currentMasterPass) {
-                switchTab('admin');
-            } else if (pass !== null) {
-                showToast("Senha incorreta!");
-            }
-        }
-
-        window.handleSaveNewAdminPassword = function(e) {
-            e.preventDefault();
-            const p1 = document.getElementById('newAdminPass').value;
-            const p2 = document.getElementById('confirmAdminPass').value;
-            if(p1 !== p2) {
-                showToast("As senhas não coincidem!");
-                return;
-            }
-            localStorage.setItem('moto_admin_custom_pass', p1);
-            showToast("Senha do administrador alterada com sucesso!");
-            document.getElementById('newAdminPass').value = '';
-            document.getElementById('confirmAdminPass').value = '';
-        }
+        window.vipPlanPrice = parseFloat(localStorage.getItem('moto_vip_price')) || 147.00;
 
         window.renderCategories = function() {
             const container = document.getElementById('categoryButtons');
@@ -566,28 +456,7 @@
                     ${cat.name}
                 </button>
             `).join('');
-        }
-
-        window.renderCategorySelect = function() {
-            const select = document.getElementById('newCategorySelect');
-            if (!select) return;
-            select.innerHTML = window.categories.filter(c => c.id !== 'all').map(c => `
-                <option value="${c.id}">${c.name}</option>
-            `).join('');
-        }
-
-        window.filterByCategory = function(id) {
-            window.activeCategory = id;
-            renderCategories();
-            renderProducts();
-        }
-
-        window.handleSearch = function(isMobile = false) {
-            const id = isMobile ? 'mobileSearchInput' : 'searchInput';
-            const el = document.getElementById(id);
-            if(el) window.searchQuery = el.value.toLowerCase();
-            renderProducts();
-        }
+        };
 
         window.renderProducts = function() {
             const container = document.getElementById('productsContainer');
@@ -619,7 +488,15 @@
                     </div>
                 </div>
             `).join('');
-        }
+        };
+
+        window.renderCategorySelect = function() {
+            const select = document.getElementById('newCategorySelect');
+            if (!select) return;
+            select.innerHTML = window.categories.filter(c => c.id !== 'all').map(c => `
+                <option value="${c.id}">${c.name}</option>
+            `).join('');
+        };
 
         window.renderAdminProductsList = function() {
             const list = document.getElementById('adminProductsList');
@@ -636,6 +513,161 @@
                     </div>
                 </div>
             `).join('') || '<p class="text-xs text-zinc-500 text-center py-2">Nenhum produto cadastrado.</p>';
+        };
+
+        window.renderDownloadsGrid = function() {
+            const grid = document.getElementById('userDownloadsGrid');
+            const lockedNotice = document.getElementById('lockedVipNotice');
+            const unlockedContainer = document.getElementById('unlockedDownloadsContainer');
+            const banner = document.getElementById('vipBanner');
+
+            if(!grid) return;
+
+            if (!window.isVipUser && window.userDownloads.length === 0) {
+                if(lockedNotice) lockedNotice.classList.remove('hidden');
+                if(unlockedContainer) unlockedContainer.classList.add('hidden');
+                if(banner) banner.classList.add('hidden');
+                return;
+            }
+
+            if(lockedNotice) lockedNotice.classList.add('hidden');
+            if(unlockedContainer) unlockedContainer.classList.remove('hidden');
+
+            if (window.isVipUser) {
+                if(banner) banner.classList.remove('hidden');
+            } else {
+                if(banner) banner.classList.add('hidden');
+            }
+
+            const items = window.isVipUser ? window.products : window.products.filter(p => window.userDownloads.includes(p.id));
+
+            grid.innerHTML = items.map(item => `
+                <div class="bg-cardbg border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between shadow-lg">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-3">
+                            <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover">
+                            <div>
+                                <span class="text-[9px] text-gold-400 font-bold uppercase">${item.categoryLabel || item.category}</span>
+                                <h4 class="text-xs sm:text-sm font-bold text-white line-clamp-1">${item.title}</h4>
+                            </div>
+                        </div>
+                        <span class="text-[10px] text-emerald-400 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Pagamento Confirmado pelo Gateway</span>
+                    </div>
+                    <div class="mt-4 space-y-2">
+                        <a href="${item.downloadUrl || '#'}" target="_blank" class="block text-center py-2.5 bg-zinc-900 text-gold-400 text-xs font-bold rounded-xl border border-gold-500/30 hover:bg-zinc-800 transition-all">Baixar Arquivo Vetorial (.ZIP / .CDR)</a>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        function initLocalFallback() {
+            window.renderCategories();
+            window.renderProducts();
+            window.renderCategorySelect();
+            window.renderDownloadsGrid();
+            window.renderAdminProductsList();
+            updateVipPriceUI();
+        }
+
+        if (auth && db) {
+            signInAnonymously(auth).then(() => {
+                onAuthStateChanged(auth, (user) => {
+                    window.currentUser = user;
+                });
+                
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
+                onSnapshot(colRef, (snapshot) => {
+                    const cloudProducts = [];
+                    snapshot.forEach(docSnap => {
+                        cloudProducts.push({ id: docSnap.id, ...docSnap.data() });
+                    });
+                    if (cloudProducts.length > 0) {
+                        window.products = cloudProducts;
+                    }
+                    initLocalFallback();
+                }, (error) => {
+                    console.warn("Firestore sync fallback:", error);
+                    initLocalFallback();
+                });
+            }).catch(() => {
+                initLocalFallback();
+            });
+        } else {
+            initLocalFallback();
+        }
+
+        window.onload = function() {
+            window.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.shiftKey && e.code === 'KeyA') {
+                    e.preventDefault();
+                    triggerAdminAccess();
+                }
+            });
+
+            if(window.location.hash === '#admin' || window.location.search.includes('admin')) {
+                triggerAdminAccess();
+            }
+
+            updateVipPriceUI();
+        };
+
+        window.updateVipPriceUI = function() {
+            const vipPriceEls = document.querySelectorAll('.vipPriceDisplay');
+            vipPriceEls.forEach(el => {
+                el.textContent = `R$ ${window.vipPlanPrice.toFixed(2).replace('.', ',')}`;
+            });
+            const input = document.getElementById('vipPriceInput');
+            if(input) input.value = window.vipPlanPrice;
+        }
+
+        window.handleSaveVipPrice = function(e) {
+            e.preventDefault();
+            const val = parseFloat(document.getElementById('vipPriceInput').value);
+            if(isNaN(val) || val <= 0) {
+                showToast("Digite um valor válido para o VIP!");
+                return;
+            }
+            window.vipPlanPrice = val;
+            localStorage.setItem('moto_vip_price', val);
+            updateVipPriceUI();
+            showToast("Preço do Plano VIP atualizado com sucesso!");
+        }
+
+        window.triggerAdminAccess = function() {
+            const pass = prompt("Digite a senha mestre do Administrador:");
+            const savedPass = localStorage.getItem('moto_admin_pass') || 'admin123';
+            if (pass === savedPass) {
+                switchTab('admin');
+                showToast("Bem-vindo ao Painel Administrativo!");
+            } else if (pass !== null) {
+                showToast("Senha incorreta!");
+            }
+        }
+
+        window.handleSaveNewAdminPassword = function(e) {
+            e.preventDefault();
+            const p1 = document.getElementById('newAdminPass').value;
+            const p2 = document.getElementById('confirmAdminPass').value;
+            if (p1 !== p2) {
+                showToast("As senhas não conferem!");
+                return;
+            }
+            localStorage.setItem('moto_admin_pass', p1);
+            showToast("Senha do Administrador atualizada com sucesso!");
+            e.target.reset();
+        }
+
+        window.filterByCategory = function(id) {
+            window.activeCategory = id;
+            window.renderCategories();
+            window.renderProducts();
+        }
+
+        window.handleSearch = function(isMobile = false) {
+            const id = isMobile ? 'mobileSearchInput' : 'searchInput';
+            const el = document.getElementById(id);
+            if(el) window.searchQuery = el.value.toLowerCase();
+            window.renderProducts();
         }
 
         window.loadProductForEdit = function(id) {
@@ -701,7 +733,7 @@
 
         window.buyVipPlan = function() {
             window.pendingVip = true;
-            document.getElementById('paymentModalPrice').textContent = `Valor: R$ 147,00 (Plano VIP Anual)`;
+            document.getElementById('paymentModalPrice').textContent = `Valor: R$ ${window.vipPlanPrice.toFixed(2).replace('.', ',')} (Plano VIP Anual)`;
             document.getElementById('paymentModal').classList.remove('hidden');
         }
 
@@ -715,7 +747,6 @@
             if (window.pendingVip) {
                 window.isVipUser = true;
                 window.pendingVip = false;
-                updateAuthUI();
                 showToast("Webhook Recebido: Assinatura VIP Aprovada!");
             } else {
                 window.cart.forEach(i => { if (!window.userDownloads.includes(i.id)) window.userDownloads.push(i.id); });
@@ -734,114 +765,8 @@
             const target = document.getElementById(tab + 'Tab');
             if(target) target.classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            if(tab === 'members') renderDownloadsGrid();
-            if(tab === 'admin') renderAdminProductsList();
-        }
-
-        window.renderDownloadsGrid = function() {
-            const grid = document.getElementById('userDownloadsGrid');
-            const lockedNotice = document.getElementById('lockedVipNotice');
-            const unlockedContainer = document.getElementById('unlockedDownloadsContainer');
-            const banner = document.getElementById('vipBanner');
-
-            if(!grid) return;
-
-            if (!window.isVipUser && window.userDownloads.length === 0) {
-                if(lockedNotice) lockedNotice.classList.remove('hidden');
-                if(unlockedContainer) unlockedContainer.classList.add('hidden');
-                if(banner) banner.classList.add('hidden');
-                return;
-            }
-
-            if(lockedNotice) lockedNotice.classList.add('hidden');
-            if(unlockedContainer) unlockedContainer.classList.remove('hidden');
-
-            if (window.isVipUser) {
-                if(banner) banner.classList.remove('hidden');
-            } else {
-                if(banner) banner.classList.add('hidden');
-            }
-
-            const items = window.isVipUser ? window.products : window.products.filter(p => window.userDownloads.includes(p.id));
-
-            grid.innerHTML = items.map(item => `
-                <div class="bg-cardbg border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between shadow-lg">
-                    <div>
-                        <div class="flex items-center space-x-3 mb-3">
-                            <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover">
-                            <div>
-                                <span class="text-[9px] text-gold-400 font-bold uppercase">${item.categoryLabel || item.category}</span>
-                                <h4 class="text-xs sm:text-sm font-bold text-white line-clamp-1">${item.title}</h4>
-                            </div>
-                        </div>
-                        <span class="text-[10px] text-emerald-400 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Pagamento Confirmado pelo Gateway</span>
-                    </div>
-                    <div class="mt-4 space-y-2">
-                        <a href="${item.downloadUrl || '#'}" target="_blank" class="block text-center py-2.5 bg-zinc-900 text-gold-400 text-xs font-bold rounded-xl border border-gold-500/30 hover:bg-zinc-800 transition-all">Baixar Arquivo Vetorial (.ZIP / .CDR)</a>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        window.toggleAuthModal = function() {
-            const modal = document.getElementById('authModal');
-            if(modal) modal.classList.toggle('hidden');
-        }
-
-        window.switchAuthTab = function(tab) {
-            ['login', 'register', 'recover'].forEach(t => {
-                const f = document.getElementById(t + 'Form');
-                if(f) f.classList.add('hidden');
-            });
-            const target = document.getElementById(tab + 'Form');
-            if(target) target.classList.remove('hidden');
-        }
-
-        window.handleLoginSubmit = async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPassword').value;
-            try {
-                if(auth) await signInWithEmailAndPassword(auth, email, pass);
-                toggleAuthModal();
-                updateAuthUI();
-                showToast("Login efetuado com sucesso!");
-                switchTab('members');
-            } catch (err) {
-                showToast("Erro ao entrar: verifique os dados no console ou ative Auth no Firebase.");
-            }
-        }
-
-        window.handleRegisterSubmit = async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('regEmail').value;
-            const pass = document.getElementById('regPassword').value;
-            try {
-                if(auth) await createUserWithEmailAndPassword(auth, email, pass);
-                toggleAuthModal();
-                updateAuthUI();
-                showToast("Cadastro criado com sucesso!");
-                switchTab('members');
-            } catch (err) {
-                showToast("Erro ao criar cadastro (ative o provedor E-mail/Senha no Firebase).");
-            }
-        }
-
-        window.handleRecoverSubmit = async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('recEmail').value;
-            try {
-                if(auth) await sendPasswordResetEmail(auth, email);
-                toggleAuthModal();
-                showToast("E-mail de recuperação enviado!");
-            } catch (err) {
-                showToast("Erro ao enviar recuperação.");
-            }
-        }
-
-        window.updateAuthUI = function() {
-            const btn = document.getElementById('authBtnText');
-            if(btn) btn.textContent = window.isVipUser ? "VIP Ativo" : (window.currentUser && !window.currentUser.isAnonymous ? "Conta" : "Área VIP");
+            if(tab === 'members') window.renderDownloadsGrid();
+            if(tab === 'admin') window.renderAdminProductsList();
         }
 
         window.toggleNewCategoryInput = function() {
@@ -880,30 +805,31 @@
                 badge: editId ? "Atualizado" : "Novo"
             };
 
+            const targetId = editId ? String(editId) : String(Date.now());
+
             if (editId) {
                 const idx = window.products.findIndex(p => String(p.id) === String(editId));
                 if(idx !== -1) {
                     window.products[idx] = { id: editId, ...productData };
                 }
             } else {
-                const newId = String(Date.now());
-                window.products.push({ id: newId, ...productData });
+                window.products.push({ id: targetId, ...productData });
             }
+
+            window.renderProducts();
+            window.renderAdminProductsList();
+            window.resetAdminForm();
+            switchTab('catalog');
 
             try {
-                const targetId = editId ? String(editId) : String(Date.now());
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', targetId);
-                await setDoc(docRef, productData, { merge: true });
-                showToast(editId ? "Molde atualizado e sincronizado no Firebase!" : "Novo molde salvo no Firebase!");
+                if (db) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', targetId);
+                    await setDoc(docRef, productData, { merge: true });
+                    showToast("Molde salvo e sincronizado com sucesso!");
+                }
             } catch (err) {
-                console.warn("Firebase sync fallback:", err);
-                showToast("Alterações salvas localmente.");
+                console.warn("Firestore save warning:", err);
             }
-
-            renderProducts();
-            renderAdminProductsList();
-            resetAdminForm();
-            switchTab('catalog');
         }
 
         window.checkoutCart = function() {
@@ -914,21 +840,9 @@
             toggleCartDrawer();
             const total = window.cart.reduce((acc, i) => acc + Number(i.price), 0);
             
-            const gatewayToken = localStorage.getItem('moto_gateway_token');
-            const gatewayProvider = localStorage.getItem('moto_gateway_provider');
-
-            if (gatewayToken && gatewayProvider === 'mercadopago') {
-                showToast("Conectando ao Mercado Pago para gerar PIX automático...");
-                setTimeout(() => {
-                    document.getElementById('paymentModalPrice').textContent = `Valor: R$ ${total.toFixed(2).replace('.', ',')} (Mercado Pago)`;
-                    document.getElementById('pixCopyInput').value = `00020126580014br.gov.bcb.pix...mercadopago.order.${Date.now()}`;
-                    document.getElementById('paymentModal').classList.remove('hidden');
-                }, 1000);
-            } else {
-                document.getElementById('paymentModalPrice').textContent = `Valor: R$ ${total.toFixed(2).replace('.', ',')}`;
-                document.getElementById('pixCopyInput').value = `00020126580014br.gov.bcb.pix...standard.order.${Date.now()}`;
-                document.getElementById('paymentModal').classList.remove('hidden');
-            }
+            document.getElementById('paymentModalPrice').textContent = `Valor: R$ ${total.toFixed(2).replace('.', ',')}`;
+            document.getElementById('pixCopyInput').value = `00020126580014br.gov.bcb.pix...order.${Date.now()}`;
+            document.getElementById('paymentModal').classList.remove('hidden');
         }
 
         window.handleSaveGatewayConfig = function(e) {
