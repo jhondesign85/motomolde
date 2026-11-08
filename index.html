@@ -443,7 +443,7 @@
             console.warn("Firebase initialization warning:", e);
         }
 
-        const appId = 'moto-molde-digital-default';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'moto-molde-digital-default';
 
         window.products = [
             { id: "1", title: "Kit Molde Honda Pop 110i (2016-2025)", category: "honda", categoryLabel: "Honda", price: 29.90, image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80", badge: "Destaque", downloadUrl: "https://drive.google.com" },
@@ -474,6 +474,7 @@
                 });
                 initFirestoreSync();
             }).catch(err => {
+                console.warn("Auth anonymous sign-in failed, using fallback:", err);
                 initLocalFallback();
             });
         } else {
@@ -484,13 +485,15 @@
             try {
                 const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
                 onSnapshot(colRef, (snapshot) => {
-                    if (!snapshot.empty) {
-                        const cloudProducts = [];
-                        snapshot.forEach(docSnap => {
-                            cloudProducts.push({ id: docSnap.id, ...docSnap.data() });
-                        });
+                    const cloudProducts = [];
+                    snapshot.forEach(docSnap => {
+                        cloudProducts.push({ id: docSnap.id, ...docSnap.data() });
+                    });
+                    
+                    if (cloudProducts.length > 0) {
                         window.products = cloudProducts;
                     } else {
+                        // Seed initial products if collection is empty
                         window.products.forEach(p => {
                             setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', String(p.id)), p);
                         });
@@ -500,9 +503,11 @@
                     renderCategorySelect();
                     renderAdminProductsList();
                 }, (error) => {
+                    console.error("Firestore snapshot error:", error);
                     initLocalFallback();
                 });
             } catch (e) {
+                console.error("Firestore init error:", e);
                 initLocalFallback();
             }
         }
@@ -888,17 +893,12 @@
             };
 
             try {
-                if (editId) {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', String(editId));
-                    await updateDoc(docRef, productData);
-                    showToast("Molde atualizado!");
-                } else {
-                    const newId = String(Date.now());
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', newId);
-                    await setDoc(docRef, productData);
-                    showToast("Novo molde salvo!");
-                }
+                const targetId = editId ? String(editId) : String(Date.now());
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', targetId);
+                await setDoc(docRef, productData, { merge: true });
+                showToast(editId ? "Molde atualizado no Firebase!" : "Novo molde salvo no Firebase!");
             } catch (err) {
+                console.error("Firebase save error:", err);
                 if (editId) {
                     const idx = window.products.findIndex(p => String(p.id) === String(editId));
                     if(idx !== -1) window.products[idx] = { id: editId, ...productData };
@@ -907,7 +907,7 @@
                 }
                 renderProducts();
                 renderAdminProductsList();
-                showToast("Molde salvo com sucesso!");
+                showToast("Molde salvo localmente.");
             }
 
             resetAdminForm();
