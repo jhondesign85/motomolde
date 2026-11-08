@@ -133,7 +133,7 @@
                     <button onclick="saveVipPrice()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar VIP</button>
                 </div>
                 <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
-                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-globe mr-2"></i> Link Base MP (Opcional)</h4>
+                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-globe mr-2"></i> Link Base MP</h4>
                     <input type="text" id="gatewayUrlInput" placeholder="Ex: https://link.mercadopago.com.br/seuusuario" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
                     <button onclick="saveGatewayUrl()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar Link Base</button>
                 </div>
@@ -161,15 +161,15 @@
         </div>
     </div>
 
-    <!-- Modal PIX / Pagamento Automático -->
+    <!-- Modal Pagamento Mercado Pago -->
     <div id="pixModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-3xl p-6 text-center relative">
             <button onclick="closePixModal()" class="absolute right-4 top-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             <div class="bg-amber-500/10 text-amber-500 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
-                <i class="fa-solid fa-qrcode"></i>
+                <i class="fa-solid fa-credit-card"></i>
             </div>
-            <h3 class="text-xl font-bold mb-1 text-white" id="modalTitlePayment">Pagamento Automático</h3>
-            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Clique abaixo para pagar o valor exato no Mercado Pago.</p>
+            <h3 class="text-xl font-bold mb-1 text-white" id="modalTitlePayment">Checkout Mercado Pago</h3>
+            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Clique no botão abaixo para efetuar o pagamento seguro.</p>
             
             <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-800 mb-6">
                 <div class="text-xs text-zinc-400 mb-1">Valor do Item:</div>
@@ -177,13 +177,9 @@
             </div>
             
             <div class="space-y-3">
-                <button id="gatewayPayBtn" onclick="openGatewayCheckout()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-credit-card text-sm"></i>
-                    <span id="gatewayBtnText">Pagar Valor Exato no Mercado Pago</span>
-                </button>
-                <button onclick="confirmPaymentSimulation()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-check-circle"></i>
-                    <span>Simular Confirmação do Banco / PIX</span>
+                <button onclick="openGatewayCheckout()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-external-link-alt text-sm"></i>
+                    <span id="gatewayBtnText">Pagar no Mercado Pago</span>
                 </button>
             </div>
         </div>
@@ -352,25 +348,20 @@
             const title = currentItemToBuy.title;
 
             if (gatewayUrl && gatewayUrl.trim().startsWith("http")) {
-                // Se você cadastrou um link base do Mercado Pago, ele tenta abrir ou redirecionar
                 window.open(gatewayUrl, '_blank');
-            } else {
-                // Caso não tenha configurado link base, gera um link automático de intenção ou direciona para o MP informando o valor
-                // Dica: No Mercado Pago você pode usar um link de pagamento genérico ou de valor livre.
-                alert(`Para pagar o valor exato de R$ ${price.toFixed(2)} (${title}), configure seu Link do Mercado Pago no Painel Admin.`);
-            }
-        }
-
-        function confirmPaymentSimulation() {
-            alert("Pagamento confirmado com sucesso! Acesso liberado.");
-            closePixModal();
-            if (currentItemToBuy && currentItemToBuy.type === 'product') {
-                const prod = products.find(p => p.id === currentItemToBuy.id);
-                if (prod && prod.downloadUrl) {
-                    window.open(prod.downloadUrl, '_blank');
+                closePixModal();
+                
+                // Após o cliente efetuar o pagamento e retornar, você pode liberar o download:
+                if (currentItemToBuy.type === 'product') {
+                    const prod = products.find(p => p.id === currentItemToBuy.id);
+                    if (prod && prod.downloadUrl) {
+                        window.open(prod.downloadUrl, '_blank');
+                    }
+                } else if (currentItemToBuy.type === 'vip') {
+                    alert("Aguardando confirmação do Mercado Pago para liberação do Acesso VIP.");
                 }
-            } else if (currentItemToBuy && currentItemToBuy.type === 'vip') {
-                alert("Parabéns! Sua conta agora possui Acesso VIP Ilimitado.");
+            } else {
+                alert("Configure o seu link do Mercado Pago no Painel Administrativo.");
             }
         }
 
