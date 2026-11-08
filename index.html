@@ -72,15 +72,15 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
                     <h2 class="text-2xl font-black tracking-tight text-white">Catálogo de Moldes</h2>
-                    <p class="text-xs text-zinc-400" id="productCountBadge">Conectando ao Firebase...</p>
+                    <p class="text-xs text-zinc-400" id="productCountBadge">Sincronizando com o Firebase...</p>
                 </div>
                 <div class="flex items-center space-x-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0" id="categoryFilters">
-                    <button onclick="filterCategory('all')" class="cat-btn bg-amber-500 text-zinc-950 font-bold px-4 py-2 rounded-xl text-xs whitespace-nowrap transition-all">Todas as Motos</button>
-                    <button onclick="filterCategory('honda')" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Honda Pop</button>
-                    <button onclick="filterCategory('biz')" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Honda Biz</button>
-                    <button onclick="filterCategory('titan')" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Titan / Fan / Start</button>
-                    <button onclick="filterCategory('bros')" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Honda Bros</button>
-                    <button onclick="filterCategory('yamaha')" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Yamaha Fazer</button>
+                    <button onclick="filterCategory('all', event)" class="cat-btn bg-amber-500 text-zinc-950 font-bold px-4 py-2 rounded-xl text-xs whitespace-nowrap transition-all">Todas as Motos</button>
+                    <button onclick="filterCategory('honda', event)" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Honda Pop</button>
+                    <button onclick="filterCategory('biz', event)" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Honda Biz</button>
+                    <button onclick="filterCategory('titan', event)" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Titan / Fan / Start</button>
+                    <button onclick="filterCategory('bros', event)" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Honda Bros</button>
+                    <button onclick="filterCategory('yamaha', event)" class="cat-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium px-4 py-2 rounded-xl text-xs whitespace-nowrap border border-zinc-800 transition-all">Yamaha Fazer</button>
                 </div>
             </div>
 
@@ -115,55 +115,4 @@
             <div class="flex items-center space-x-3 mb-8 border-b border-zinc-800 pb-4">
                 <div class="bg-amber-500 text-zinc-950 p-3 rounded-xl font-bold"><i class="fa-solid fa-sliders"></i></div>
                 <div>
-                    <h2 class="text-2xl font-black text-white">Painel Administrativo</h2>
-                    <p class="text-xs text-zinc-400">Gerencie preços, senhas e novos moldes em tempo real.</p>
-                </div>
-            </div>
-
-            <!-- Configurar Senha e Preço VIP -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
-                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-key mr-2"></i> Alterar Senha Admin</h4>
-                    <input type="password" id="newAdminPass" placeholder="Nova senha mestre" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
-                    <button onclick="updateAdminPassword()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 rounded-xl text-xs border border-zinc-700">Atualizar Senha</button>
-                </div>
-                <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
-                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-crown mr-2"></i> Configurar Preço VIP (R$)</h4>
-                    <input type="number" id="newVipPriceInput" placeholder="Ex: 147.00" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
-                    <button onclick="saveVipPrice()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar Preço VIP</button>
-                </div>
-            </div>
-
-            <!-- Adicionar Molde -->
-            <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 mb-8">
-                <h4 class="font-bold text-sm text-amber-400 mb-4"><i class="fa-solid fa-plus-circle mr-2"></i> Cadastrar Novo Molde</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <input type="text" id="moldTitle" placeholder="Título (Ex: Kit Molde XRE 300)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
-                    <input type="number" id="moldPrice" placeholder="Preço (Ex: 29.90)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
-                    <input type="text" id="moldCategory" placeholder="Categoria (Ex: honda, biz, titan, bros, yamaha)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
-                    <input type="text" id="moldCategoryLabel" placeholder="Rótulo da Categoria (Ex: HONDA)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
-                    <input type="text" id="moldImage" placeholder="URL da Imagem de Capa" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
-                    <input type="text" id="moldDownloadUrl" placeholder="Link do Google Drive / OneDrive" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
-                </div>
-                <button onclick="addNewMold()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition-all">Salvar e Sincronizar com Firebase</button>
-            </div>
-
-            <!-- Lista de Produtos Cadastrados -->
-            <h4 class="font-bold text-sm text-white mb-3">Moldes Ativos no Sistema</h4>
-            <div id="adminProductsList" class="space-y-2 max-h-60 overflow-y-auto pr-2">
-                <!-- Preenchido via JS -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal PIX / Pagamento -->
-    <div id="pixModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-3xl p-6 text-center relative">
-            <button onclick="closePixModal()" class="absolute right-4 top-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <div class="bg-amber-500/10 text-amber-500 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
-                <i class="fa-solid fa-qrcode"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-1 text-white">Pagamento PIX Seguro</h3>
-            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Escaneie o QR Code abaixo para liberar instantaneamente.</p>
-            <div class="bg-white p-4 rounded-2xl w-48 h-48 mx-auto mb-4 flex items-center justify-center border-4 border-amber-500/20">
-                <i class="fa-solid fa-qrcode text-
+                    <h2 class="text-2xl font-black text
