@@ -116,21 +116,26 @@
                 <div class="bg-amber-500 text-zinc-950 p-3 rounded-xl font-bold"><i class="fa-solid fa-sliders"></i></div>
                 <div>
                     <h2 class="text-2xl font-black text-white">Painel Administrativo</h2>
-                    <p class="text-xs text-zinc-400">Gerencie preços, senhas e novos moldes em tempo real.</p>
+                    <p class="text-xs text-zinc-400">Gerencie preços, senhas, gateway e novos moldes em tempo real.</p>
                 </div>
             </div>
 
-            <!-- Configurar Senha e Preço VIP -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Configurar Senha, Preço VIP e Gateway -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
-                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-key mr-2"></i> Alterar Senha Admin</h4>
-                    <input type="password" id="newAdminPass" placeholder="Nova senha mestre" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
-                    <button onclick="updateAdminPassword()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 rounded-xl text-xs border border-zinc-700">Atualizar Senha</button>
+                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-key mr-2"></i> Senha Admin</h4>
+                    <input type="password" id="newAdminPass" placeholder="Nova senha" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
+                    <button onclick="updateAdminPassword()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 rounded-xl text-xs border border-zinc-700">Atualizar</button>
                 </div>
                 <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
-                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-crown mr-2"></i> Configurar Preço VIP (R$)</h4>
+                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-crown mr-2"></i> Preço VIP (R$)</h4>
                     <input type="number" id="newVipPriceInput" placeholder="Ex: 150.00" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
-                    <button onclick="saveVipPrice()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar Preço VIP</button>
+                    <button onclick="saveVipPrice()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar VIP</button>
+                </div>
+                <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
+                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-globe mr-2"></i> Link do Gateway (Checkout)</h4>
+                    <input type="text" id="gatewayUrlInput" placeholder="https://mpago.la/..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
+                    <button onclick="saveGatewayUrl()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar Gateway</button>
                 </div>
             </div>
 
@@ -156,29 +161,36 @@
         </div>
     </div>
 
-    <!-- Modal PIX / Pagamento -->
+    <!-- Modal PIX / Gateway -->
     <div id="pixModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-3xl p-6 text-center relative">
             <button onclick="closePixModal()" class="absolute right-4 top-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             <div class="bg-amber-500/10 text-amber-500 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
                 <i class="fa-solid fa-qrcode"></i>
             </div>
-            <h3 class="text-xl font-bold mb-1 text-white">Pagamento PIX Seguro</h3>
-            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Escaneie o QR Code abaixo para liberar instantaneamente.</p>
-            <div class="bg-white p-4 rounded-2xl w-48 h-48 mx-auto mb-4 flex items-center justify-center border-4 border-amber-500/20">
+            <h3 class="text-xl font-bold mb-1 text-white">Pagamento PIX / Gateway</h3>
+            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Escaneie o QR Code ou escolha pagar pelo Gateway Oficial.</p>
+            <div class="bg-white p-4 rounded-2xl w-48 h-48 mx-auto mb-4 flex items-center justify-center border-4 border-amber-500/25">
                 <i class="fa-solid fa-qrcode text-8xl text-zinc-950"></i>
             </div>
             <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 mb-4 text-xs font-mono text-amber-400 break-all select-all">
-                00020126580014br.gov.bcb.pix...mercado pago
+                00020126580014br.gov.bcb.pix...gateway
             </div>
-            <button onclick="confirmPaymentSimulation()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center space-x-2">
-                <i class="fa-solid fa-check-circle"></i>
-                <span>Simular Confirmação do Banco / PIX</span>
-            </button>
+            
+            <div class="space-y-2">
+                <button id="gatewayPayBtn" onclick="openGatewayCheckout()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center space-x-2 hidden">
+                    <i class="fa-solid fa-credit-card"></i>
+                    <span>Ir para o Checkout do Gateway (Mercado Pago)</span>
+                </button>
+                <button onclick="confirmPaymentSimulation()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Simular Confirmação do Banco / PIX</span>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Script Principal Robusto com Fallback e Credenciais Oficiais -->
+    <!-- Script Principal -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBgsuJa29UkurPuKeqBD0jLuLeN_kwDtEU",
@@ -194,7 +206,6 @@
         }
         const db = firebase.firestore();
 
-        // Dados padrão locais para garantir renderização imediata sem travamentos
         let products = [
             { id: '1', title: 'Kit Molde Honda Pop 110i (2016-2025)', price: 29.90, category: 'honda', categoryLabel: 'HONDA', image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=500&auto=format&fit=crop&q=60', downloadUrl: 'https://drive.google.com', badge: 'Mais Vendido' },
             { id: '2', title: 'Kit Molde Yamaha Fazer 250 FZ25', price: 39.90, category: 'yamaha', categoryLabel: 'YAMAHA', image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=500&auto=format&fit=crop&q=60', downloadUrl: 'https://drive.google.com', badge: 'Novo' }
@@ -202,15 +213,14 @@
 
         let vipPrice = 150.00;
         let adminPass = "admin123";
+        let gatewayUrl = "";
         let activeCategory = 'all';
         let currentItemToBuy = null;
 
         function initFirebaseListeners() {
-            // Renderiza imediatamente com os dados locais para exibir a tela na hora
             renderProducts();
             renderAdminProductsList();
 
-            // Sincroniza produtos do Firestore em tempo real
             db.collection("products").onSnapshot((snapshot) => {
                 if (!snapshot.empty) {
                     let cloudProducts = [];
@@ -224,24 +234,25 @@
                     }
                 }
             }, (error) => {
-                console.warn("Aviso de conexão offline:", error);
+                console.warn("Offline mode:", error);
             });
 
-            // Sincroniza configurações e preço VIP do Firestore
             db.collection("settings").doc("config").onSnapshot((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
                     if (data.vipPrice !== undefined) vipPrice = Number(data.vipPrice);
                     if (data.adminPass) adminPass = data.adminPass;
+                    if (data.gatewayUrl !== undefined) gatewayUrl = data.gatewayUrl;
                     
                     const bannerEl = document.getElementById("bannerVipPrice");
                     if (bannerEl) bannerEl.innerText = `Assinar VIP por R$ ${vipPrice.toFixed(2)} (Gerar PIX)`;
                     
                     const vipInput = document.getElementById("newVipPriceInput");
                     if (vipInput) vipInput.value = vipPrice;
+
+                    const gatewayInput = document.getElementById("gatewayUrlInput");
+                    if (gatewayInput) gatewayInput.value = gatewayUrl;
                 }
-            }, (error) => {
-                console.warn("Aviso ao carregar configurações:", error);
             });
         }
 
@@ -319,17 +330,34 @@
         function buyProduct(id, title, price) {
             currentItemToBuy = { id, title, price, type: 'product' };
             document.getElementById("pixModalSubtitle").innerText = `Pagamento para: ${title} (R$ ${price.toFixed(2)})`;
+            checkGatewayButton();
             document.getElementById("pixModal").classList.remove("hidden");
         }
 
         function openVipModal() {
             currentItemToBuy = { title: 'Acesso VIP Anual', price: vipPrice, type: 'vip' };
             document.getElementById("pixModalSubtitle").innerText = `Assinatura VIP Anual (R$ ${Number(vipPrice).toFixed(2)})`;
+            checkGatewayButton();
             document.getElementById("pixModal").classList.remove("hidden");
         }
 
         function closePixModal() {
             document.getElementById("pixModal").classList.add("hidden");
+        }
+
+        function checkGatewayButton() {
+            const btn = document.getElementById("gatewayPayBtn");
+            if (gatewayUrl && gatewayUrl.trim() !== "") {
+                btn.classList.remove("hidden");
+            } else {
+                btn.classList.add("hidden");
+            }
+        }
+
+        function openGatewayCheckout() {
+            if (gatewayUrl) {
+                window.open(gatewayUrl, '_blank');
+            }
         }
 
         function confirmPaymentSimulation() {
@@ -372,8 +400,8 @@
             const newPass = document.getElementById("newAdminPass").value;
             if (!newPass) return alert("Digite uma nova senha válida.");
             adminPass = newPass;
-            db.collection("settings").doc("config").set({ adminPass: newPass, vipPrice: vipPrice }, { merge: true })
-                .then(() => alert("Senha atualizada e salva no Firebase com sucesso!"))
+            db.collection("settings").doc("config").set({ adminPass: newPass, vipPrice: vipPrice, gatewayUrl: gatewayUrl }, { merge: true })
+                .then(() => alert("Senha atualizada com sucesso!"))
                 .catch(err => alert("Erro ao salvar: " + err.message));
         }
 
@@ -381,12 +409,20 @@
             const newPrice = parseFloat(document.getElementById("newVipPriceInput").value);
             if (isNaN(newPrice)) return alert("Digite um valor numérico válido.");
             vipPrice = newPrice;
-            db.collection("settings").doc("config").set({ adminPass: adminPass, vipPrice: vipPrice }, { merge: true })
+            db.collection("settings").doc("config").set({ adminPass: adminPass, vipPrice: vipPrice, gatewayUrl: gatewayUrl }, { merge: true })
                 .then(() => {
-                    alert("Preço VIP atualizado no Firebase!");
+                    alert("Preço VIP atualizado!");
                     const bannerEl = document.getElementById("bannerVipPrice");
                     if (bannerEl) bannerEl.innerText = `Assinar VIP por R$ ${Number(vipPrice).toFixed(2)} (Gerar PIX)`;
                 })
+                .catch(err => alert("Erro ao salvar: " + err.message));
+        }
+
+        function saveGatewayUrl() {
+            const url = document.getElementById("gatewayUrlInput").value.trim();
+            gatewayUrl = url;
+            db.collection("settings").doc("config").set({ adminPass: adminPass, vipPrice: vipPrice, gatewayUrl: gatewayUrl }, { merge: true })
+                .then(() => alert("Link do Gateway salvo com sucesso no Firebase!"))
                 .catch(err => alert("Erro ao salvar: " + err.message));
         }
 
@@ -407,7 +443,7 @@
 
             db.collection("products").doc(newId).set(moldData)
                 .then(() => {
-                    alert("Molde cadastrado e sincronizado com o Firebase!");
+                    alert("Molde cadastrado e sincronizado!");
                     document.getElementById("moldTitle").value = "";
                     document.getElementById("moldPrice").value = "";
                     document.getElementById("moldCategory").value = "";
