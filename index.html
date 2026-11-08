@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moto Molde Digital - Arquivos Vetoriais para Recorte Eletrônico (PDF & CDR)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            400: '#FACC15',
+                            500: '#EAB308',
+                            600: '#CA8A04',
+                        },
+                        darkbg: '#0F0F12',
+                        cardbg: '#18181C',
+                        carbon: '#222228',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0F0F12;
+            color: #E4E4E7;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0F0F12;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272A;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #EAB308;
+        }
+        .bg-carbon-pattern {
+            background-color: #121215;
+            background-image: radial-gradient(#27272a 1px, transparent 1px), radial-gradient(#27272a 1px, #121215 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+        .gold-glow {
+            box-shadow: 0 0 25px -5px rgba(234, 179, 8, 0.3);
+        }
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF 0%, #FACC15 50%, #CA8A04 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-gold-500 selection:text-black">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-40 backdrop-blur-md bg-darkbg/90 border-b border-zinc-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- LOGO -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('catalog')">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center shadow-lg shadow-gold-500/20">
+                        <i class="fa-solid fa-motorcycle text-darkbg text-2xl font-black"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-black tracking-wider block leading-none">MOTO<span class="text-gold-400">MOLDE</span></span>
+                        <span class="text-[10px] text-zinc-400 font-semibold tracking-widest uppercase">Digital Vectors & CDR</span>
+                    </div>
+                </div>
+
+                <!-- DESKTOP SEARCH BAR -->
+                <div class="hidden md:flex flex-1 max-w-md mx-8 relative">
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Buscar moldes (ex: Pop 110, Titan 160)..." 
+                        class="w-full bg-cardbg border border-zinc-700/80 rounded-full py-2.5 pl-11 pr-4 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-gold-500 transition-all">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-zinc-500 text-sm"></i>
+                </div>
+
+                <!-- NAVIGATION BUTTONS -->
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <button onclick="switchTab('catalog')" id="navCatalogBtn" class="px-3 py-2 text-sm font-semibold text-gold-400 border-b-2 border-gold-400 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-store"></i>
+                        <span class="hidden sm:inline">Catálogo</span>
+                    </button>
+                    
+                    <button onclick="switchTab('members')" id="navMembersBtn" class="px-3 py-2 text-sm font-semibold text-zinc-400 hover:text-zinc-200 border-b-2 border-transparent transition-all flex items-center space-x-2 relative">
+                        <i class="fa-solid fa-crown text-gold-400"></i>
+                        <span>Área VIP</span>
+                        <span id="userBadge" class="hidden absolute -top-1 -right-1 bg-gold-500 text-black text-[10px] font-black px-1.5 py-0.5 rounded-full">VIP</span>
+                    </button>
+
+                    <!-- PAINEL ADMIN BUTTON (Oculto até autenticação mestre) -->
+                    <button id="navAdminBtn" onclick="switchTab('admin')" class="hidden px-3 py-2 text-sm font-semibold text-purple-400 border-b-2 border-transparent hover:text-purple-300 transition-all flex items-center space-x-1.5">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                        <span>Admin</span>
+                    </button>
+
+                    <!-- CART BUTTON -->
+                    <button onclick="toggleCartDrawer()" class="relative p-2.5 rounded-xl bg-cardbg border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white transition-all">
+                        <i class="fa-solid fa-cart-shopping text-lg"></i>
+                        <span id="cartCount" class="absolute -top-1.5 -right-1.5 bg-gold-500 text-darkbg text-xs font-black rounded-full w-5 h-5 flex items-center justify-center shadow-md">0</span>
+                    </button>
+
+                    <!-- LOGIN / ACCOUNT BUTTON -->
+                    <button id="authBtn" onclick="toggleAuthModal()" class="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-sm transition-all flex items-center space-x-2 border border-zinc-700">
+                        <i class="fa-regular fa-user"></i>
+                        <span class="hidden sm:inline" id="authBtnText">Entrar VIP</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- MOBILE SEARCH -->
+            <div class="pb-4 md:hidden">
+                <div class="relative">
+                    <input type="text" id="mobileSearchInput" oninput="handleSearch(true)" placeholder="Buscar modelo..." 
+                        class="w-full bg-cardbg border border-zinc-700 rounded-full py-2 pl-10 pr-4 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-zinc-500 text-sm"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="flex-grow">
+        
+        <!-- SECTION: CATALOG VIEW -->
+        <div id="catalogTab" class="block">
+            <!-- HERO -->
+            <section class="relative bg-carbon-pattern border-b border-zinc-800 py-12 md:py-20 overflow-hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                        <div class="lg:col-span-7 text-center lg:text-left space-y-6">
+                            <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/30 text-gold-400 text-xs font-bold uppercase tracking-wider">
+                                <i class="fa-solid fa-bolt"></i>
+                                <span>Gabaritos 100% Testados e na Medida Real</span>
+                            </div>
+                            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
+                                Moldes Vetoriais para <span class="gold-gradient-text">Plotter de Recorte</span>
+                            </h1>
+                            <p class="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto lg:mx-0">
+                                Arquivos profissionais em <strong>CDR (CorelDRAW)</strong> e <strong>PDF</strong> para envelopamento e adesivação de motos com encaixe perfeito.
+                            </p>
+                            <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+                                <a href="#catalogGrid" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-gold-400 to-gold-600 text-darkbg font-extrabold text-base shadow-lg text-center">
+                                    <i class="fa-solid fa-folder-open mr-2"></i> Ver Catálogo de Moldes
+                                </a>
+                                <button onclick="openVipCheckout()" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-cardbg hover:bg-zinc-800 text-white font-bold text-base border border-zinc-700 text-center">
+                                    <i class="fa-solid fa-crown text-gold-400 mr-2"></i> Assinar Plano VIP (R$ 147)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Hero Feature Card -->
+                        <div class="lg:col-span-5">
+                            <div class="bg-cardbg border border-zinc-700 rounded-2xl p-6 shadow-2xl gold-glow">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-xs font-extrabold uppercase px-3 py-1 bg-gold-500/20 text-gold-400 border border-gold-500/30 rounded-md">Destaque VIP</span>
+                                    <span class="text-xs text-emerald-400 font-bold"><i class="fa-solid fa-check-circle mr-1"></i> Acesso Imediato</span>
+                                </div>
+                                <div class="rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 mb-4 cursor-pointer" onclick="openProductModal(1)">
+                                    <img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80" alt="Molde Pop 110i" class="w-full h-48 object-cover">
+                                </div>
+                                <h3 class="text-lg font-bold text-white mb-2">Pack Completo Honda Pop & Titan (2016-2025)</h3>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-2xl font-black text-gold-400">R$ 39,90</span>
+                                    <button onclick="addToCart(1)" class="px-4 py-2.5 bg-gold-500 hover:bg-gold-400 text-darkbg font-extrabold text-xs rounded-xl">
+                                        Adicionar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CATALOG SECTION -->
+            <section id="catalogGrid" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Catálogo de Moldes</h2>
+                        <p class="text-sm text-zinc-400 mt-1">Filtre por modelo ou busque diretamente o gabarito desejado.</p>
+                    </div>
+                    <div class="text-sm text-zinc-400">
+                        Exibindo <span id="productCount" class="text-gold-400 font-bold">0</span> moldes
+                    </div>
+                </div>
+
+                <!-- CATEGORY BUTTONS -->
+                <div class="flex items-center space-x-2 overflow-x-auto pb-4 mb-6" id="categoryButtons"></div>
+
+                <!-- PRODUCTS GRID -->
+                <div id="productsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+                <div id="emptyState" class="hidden text-center py-16 bg-cardbg rounded-2xl border border-zinc-800 my-8">
+                    <i class="fa-solid fa-motorcycle text-5xl text-zinc-600 mb-4"></i>
+                    <h3 class="text-lg font-bold text-zinc-300">Nenhum molde encontrado</h3>
+                    <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-zinc-800 text-gold-400 text-sm font-bold rounded-lg border border-zinc-700">Limpar Filtros</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- SECTION: VIP MEMBERS AREA (RESTRITO A VIPs) -->
+        <div id="membersTab" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div id="vipMemberBanner" class="hidden bg-gradient-to-r from-gold-500/20 via-cardbg to-cardbg border border-gold-500/40 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-full bg-gold-500 flex items-center justify-center text-darkbg text-2xl font-black">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white flex items-center">
+                            Área VIP Ativa <span class="ml-2 text-xs bg-emerald-500 text-black font-extrabold px-2 py-0.5 rounded">LIBERADO</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-zinc-400">Acesso ilimitado a todos os arquivos CDR e PDF do acervo.</p>
+                    </div>
+                </div>
+                <button onclick="switchTab('catalog')" class="px-4 py-2 bg-gold-500 hover:bg-gold-400 text-darkbg font-bold text-sm rounded-xl">Explorar Catálogo</button>
+            </div>
+
+            <!-- NON-VIP LOCK VIEW -->
+            <div id="nonVipBanner" class="bg-cardbg border border-zinc-800 rounded-2xl p-8 text-center max-w-xl mx-auto my-12 shadow-2xl">
+                <div class="w-16 h-16 rounded-2xl bg-gold-500/20 text-gold-400 mx-auto flex items-center justify-center text-3xl font-bold mb-4 border border-gold-500/30">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-2xl font-black text-white mb-2">Área Exclusiva para Membros VIP</h3>
+                <p class="text-sm text-zinc-400 mb-6">Cadastre sua conta e efetue o pagamento do Plano VIP para liberar instantaneamente o download de todos os moldes vetoriais.</p>
+                <button onclick="openVipCheckout()" class="w-full py-4 bg-gradient-to-r from-gold-400 to-gold-600 hover:from-gold-500 hover:to-gold-600 text-darkbg font-black text-base rounded-xl shadow-lg">
+                    <i class="fa-solid fa-crown mr-2"></i> Assinar Plano VIP e Liberar Acesso
+                </button>
+            </div>
+
+            <div id="vipDownloadsSection" class="hidden">
+                <div class="flex items-center justify-between mb-8 pb-4 border-b border-zinc-800">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-white">Central de Downloads VIP</h2>
+                        <p class="text-sm text-zinc-400 mt-1">Baixe os arquivos originais em vetor para sua plotter.</p>
+                    </div>
+                </div>
+                <div id="userDownloadsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+        </div>
+
+        <!-- SECTION: ADMIN DASHBOARD (EXCLUSIVO PARA VOCÊ) -->
+        <div id="adminTab" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="bg-cardbg border border-purple-500/30 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-black text-white flex items-center">
+                        <i class="fa-solid fa-shield-halved text-purple-400 mr-2.5"></i> Painel do Administrador
+                    </h2>
+                    <p class="text-xs sm:text-sm text-zinc-400 mt-1">Cadastre novos moldes e gerencie os preços do catálogo em tempo real.</p>
+                </div>
+                <button onclick="logoutAdmin()" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-red-400 font-bold text-xs rounded-xl border border-red-500/30">
+                    Sair do Admin
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- FORM: NOVO MOLDE -->
+                <div class="lg:col-span-5 bg-cardbg border border-zinc-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="text-lg font-bold text-white flex items-center">
+                        <i class="fa-solid fa-plus-circle text-gold-400 mr-2"></i> Cadastrar Novo Molde
+                    </h3>
+                    <form onsubmit="handleCreateProduct(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-zinc-400 uppercase mb-1">Título do Molde</label>
+                            <input type="text" id="adminTitle" required placeholder="Ex: Honda CB 300F 2024" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-gold-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-zinc-400 uppercase mb-1">Categoria</label>
+                                <select id="adminCategory" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
+                                    <option value="pop">Honda Pop</option>
+                                    <option value="biz">Honda Biz</option>
+                                    <option value="titan">Titan / Fan</option>
+                                    <option value="bros">Honda Bros</option>
+                                    <option value="fazer">Yamaha Fazer</option>
+                                    <option value="outros">Outros</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-zinc-400 uppercase mb-1">Preço (R$)</label>
+                                <input type="number" step="0.01" id="adminPrice" required placeholder="39.90" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-zinc-400 uppercase mb-1">URL da Imagem</label>
+                            <input type="url" id="adminImage" required value="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-zinc-400 uppercase mb-1">Descrição</label>
+                            <textarea id="adminDesc" rows="2" placeholder="Detalhes do gabarito..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-gradient-to-r from-gold-400 to-gold-600 text-darkbg font-extrabold text-sm rounded-xl shadow-lg">
+                            Salvar e Publicar Molde
+                        </button>
+                    </form>
+                </div>
+
+                <!-- TABLE: EDITAR VALORES -->
+                <div class="lg:col-span-7 bg-cardbg border border-zinc-800 rounded-2xl p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                        <i class="fa-solid fa-pen-to-square text-purple-400 mr-2"></i> Alterar Preços & Gerenciar Moldes
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-zinc-300">
+                            <thead class="bg-zinc-900 text-zinc-400 uppercase">
+                                <tr>
+                                    <th class="p-3">Molde</th>
+                                    <th class="p-3">Preço Atual</th>
+                                    <th class="p-3">Novo Preço</th>
+                                    <th class="p-3 text-right">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminProductsTable" class="divide-y divide-zinc-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-carbon-pattern border-t border-zinc-800 pt-10 pb-6 mt-16 text-zinc-400 text-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p>&copy; 2026 Moto Molde Digital. Todos os direitos reservados.</p>
+            <!-- BOTÃO SECRETO DE ACESSO ADMIN -->
+            <button onclick="promptAdminLogin()" class="text-xs text-zinc-600 hover:text-zinc-400 flex items-center space-x-1">
+                <i class="fa-solid fa-lock text-[10px]"></i>
+                <span>Acesso Administrativo</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- PRODUCT DETAILS MODAL -->
+    <div id="productModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-cardbg border border-zinc-700 rounded-2xl max-w-2xl w-full p-6 relative">
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- CART DRAWER -->
+    <div id="cartDrawer" class="fixed inset-0 z-50 hidden">
+        <div onclick="toggleCartDrawer()" class="absolute inset-0 bg-black/70"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-cardbg border-l border-zinc-800 flex flex-col justify-between shadow-2xl">
+            <div class="p-5 border-b border-zinc-800 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-white">Carrinho de Compras</h3>
+                <button onclick="toggleCartDrawer()" class="text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="cartItemsList" class="flex-grow overflow-y-auto p-5 space-y-4"></div>
+            <div class="p-5 border-t border-zinc-800 bg-zinc-900/50 space-y-4">
+                <div class="flex justify-between text-lg font-black text-white">
+                    <span>Total</span>
+                    <span id="cartTotal" class="text-gold-400">R$ 0,00</span>
+                </div>
+                <button onclick="openPixModal(cartTotalAmount, 'Carrinho Avulso')" class="w-full py-4 rounded-xl bg-gradient-to-r from-gold-400 to-gold-600 text-darkbg font-black text-base shadow-lg">
+                    Pagar com PIX & Baixar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIX PAYMENT MODAL -->
+    <div id="pixModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-cardbg border border-zinc-700 rounded-2xl max-w-md w-full p-6 text-center relative">
+            <button onclick="closePixModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            <div class="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center text-2xl font-bold mb-3 border border-emerald-500/30">
+                <i class="fa-brands fa-pix"></i>
+            </div>
+            <h3 class="text-xl font-black text-white" id="pixModalTitle">Pagamento via PIX</h3>
+            <p class="text-xs text-zinc-400 mt-1">O acesso VIP ou dos moldes é liberado automaticamente após a confirmação.</p>
+            <div class="my-5 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center">
+                <span class="text-xs text-zinc-400">Valor Total:</span>
+                <span class="text-2xl font-black text-gold-400 mt-0.5" id="pixValueText">R$ 147,00</span>
+            </div>
+            <button onclick="confirmPixPaymentSimulated()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-sm rounded-xl shadow-lg">
+                <i class="fa-solid fa-circle-check"></i> Confirmar Pagamento Realizado
+            </button>
+        </div>
+    </div>
+
+    <!-- AUTHENTICATION / VIP REGISTRATION MODAL -->
+    <div id="authModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-cardbg border border-zinc-700 rounded-2xl max-w-md w-full p-6 relative">
+            <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-extrabold text-white">Criar Conta / Login VIP</h3>
+                <p class="text-xs text-zinc-400 mt-1">Insira seus dados para acessar sua conta.</p>
+            </div>
+            <form onsubmit="handleVipLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 uppercase mb-1">E-mail</label>
+                    <input type="email" id="loginEmail" required placeholder="seu@email.com" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 uppercase mb-1">Senha</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-gold-500 text-darkbg font-extrabold text-sm rounded-xl">Entrar / Cadastrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-zinc-800 border border-gold-500/50 text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center space-x-3">
+        <i class="fa-solid fa-circle-check text-gold-400 text-lg"></i>
+        <span id="toastMessage" class="text-sm font-semibold"></span>
+    </div>
+
+    <!-- APPLICATION SCRIPT -->
+    <script>
+        let products = [
+            { id: 1, title: "Kit Molde Honda Pop 110i (2016-2025)", category: "pop", categoryLabel: "Honda Pop", price: 29.90, image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80", badge: "Lançamento", description: "Vetor completo em escala 1:1." },
+            { id: 2, title: "Kit Molde Honda Titan / Fan 160", category: "titan", categoryLabel: "Titan / Fan", price: 39.90, image: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=800&q=80", badge: "Mais Vendido", description: "Gabarito testado e aprovado." },
+            { id: 3, title: "Kit Molde Honda Biz 125", category: "biz", categoryLabel: "Honda Biz", price: 34.90, image: "https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?auto=format&fit=crop&w=800&q=80", badge: "Precisão", description: "Escudo e abas laterais." }
+        ];
+
+        let categories = [
+            { id: "all", name: "Todas" },
+            { id: "pop", name: "Honda Pop" },
+            { id: "biz", name: "Honda Biz" },
+            { id: "titan", name: "Titan / Fan" },
+            { id: "bros", name: "Honda Bros" },
+            { id: "fazer", name: "Yamaha Fazer" },
+            { id: "outros", name: "Outros" }
+        ];
+
+        let activeCategory = "all";
+        let searchQuery = "";
+        let cart = [];
+        let cartTotalAmount = 0;
+        let pendingCheckoutType = "VIP";
+        let isLoggedIn = false;
+        let isVipUser = false;
+        let isAdminLoggedIn = false;
+
+        window.onload = function() {
+            renderCategories();
+            renderProducts();
+            updateCartBadge();
+        };
+
+        function renderCategories() {
+            const container = document.getElementById('categoryButtons');
+            if (!container) return;
+            container.innerHTML = categories.map(cat => `
+                <button onclick="filterByCategory('${cat.id}')" 
+                    class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${activeCategory === cat.id ? 'bg-gold-500 text-darkbg shadow-md' : 'bg-cardbg text-zinc-400 hover:text-white border border-zinc-800'}">
+                    ${cat.name}
+                </button>
+            `).join('');
+        }
+
+        function filterByCategory(id) {
+            activeCategory = id;
+            renderCategories();
+            renderProducts();
+        }
+
+        function handleSearch(isMobile = false) {
+            const inputId = isMobile ? 'mobileSearchInput' : 'searchInput';
+            searchQuery = document.getElementById(inputId).value.toLowerCase();
+            renderProducts();
+        }
+
+        function resetFilters() {
+            activeCategory = "all";
+            searchQuery = "";
+            document.getElementById('searchInput').value = "";
+            renderCategories();
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('productsContainer');
+            const emptyState = document.getElementById('emptyState');
+            if (!container) return;
+
+            const filtered = products.filter(p => {
+                const matchesCat = activeCategory === "all" || p.category === activeCategory;
+                const matchesSearch = p.title.toLowerCase().includes(searchQuery);
+                return matchesCat && matchesSearch;
+            });
+
+            document.getElementById('productCount').textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = "";
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            container.innerHTML = filtered.map(p => `
+                <div class="bg-cardbg border border-zinc-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="relative overflow-hidden cursor-pointer bg-zinc-900" onclick="openProductModal(${p.id})">
+                            <img src="${p.image}" alt="${p.title}" class="w-full h-44 object-cover">
+                            <div class="absolute top-3 left-3 bg-gold-500 text-darkbg text-[10px] font-black uppercase px-2 py-0.5 rounded">${p.badge}</div>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-[11px] font-bold text-gold-400 uppercase">${p.categoryLabel}</span>
+                            <h3 class="text-base font-bold text-white mt-1 line-clamp-2">${p.title}</h3>
+                            <p class="text-xs text-zinc-400 mt-2 line-clamp-2">${p.description}</p>
+                        </div>
+                    </div>
+                    <div class="p-5 pt-0">
+                        <div class="flex items-center justify-between border-t border-zinc-800 pt-4 mb-4">
+                            <span class="text-xl font-black text-white">R$ ${p.price.toFixed(2).replace('.', ',')}</span>
+                            <button onclick="openProductModal(${p.id})" class="text-xs text-zinc-400 hover:text-white">Detalhes</button>
+                        </div>
+                        <button onclick="addToCart(${p.id})" class="w-full py-2.5 bg-gold-500 hover:bg-gold-400 text-darkbg text-xs font-extrabold rounded-xl">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openProductModal(id) {
+            const p = products.find(item => item.id === id);
+            if (!p) return;
+            document.getElementById('modalContent').innerHTML = `
+                <img src="${p.image}" class="w-full h-52 object-cover rounded-xl mb-4">
+                <h2 class="text-xl font-bold text-white mb-2">${p.title}</h2>
+                <p class="text-sm text-zinc-400 mb-4">${p.description}</p>
+                <div class="text-2xl font-black text-gold-400 mb-6">R$ ${p.price.toFixed(2).replace('.', ',')}</div>
+                <button onclick="addToCart(${p.id}); closeProductModal();" class="w-full py-3 bg-gold-500 text-darkbg font-bold rounded-xl">Comprar Agora</button>
+            `;
+            document.getElementById('productModal').classList.remove('hidden');
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        function addToCart(id) {
+            const p = products.find(item => item.id === id);
+            if (!p) return;
+            if (!cart.some(item => item.id === id)) {
+                cart.push(p);
+                showToast(`"${p.title}" adicionado ao carrinho!`);
+            }
+            updateCartBadge();
+            renderCartDrawer();
+        }
+
+        function updateCartBadge() {
+            document.getElementById('cartCount').textContent = cart.length;
+        }
+
+        function toggleCartDrawer() {
+            document.getElementById('cartDrawer').classList.toggle('hidden');
+            renderCartDrawer();
+        }
+
+        function renderCartDrawer() {
+            const list = document.getElementById('cartItemsList');
+            cartTotalAmount = cart.reduce((acc, item) => acc + item.price, 0);
+            document.getElementById('cartTotal').textContent = `R$ ${cartTotalAmount.toFixed(2).replace('.', ',')}`;
+
+            if (cart.length === 0) {
+                list.innerHTML = `<p class="text-center text-zinc-500 py-10">Seu carrinho está vazio.</p>`;
+                return;
+            }
+
+            list.innerHTML = cart.map(item => `
+                <div class="flex items-center justify-between p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
+                    <span class="text-xs text-white font-bold">${item.title}</span>
+                    <span class="text-xs text-gold-400 font-bold">R$ ${item.price.toFixed(2).replace('.', ',')}</span>
+                </div>
+            `).join('');
+        }
+
+        function openPixModal(val, desc) {
+            pendingCheckoutType = desc.includes("VIP") ? "VIP" : "CART";
+            document.getElementById('pixValueText').textContent = `R$ ${val.toFixed(2).replace('.', ',')}`;
+            document.getElementById('pixModalTitle').textContent = `PIX: ${desc}`;
+            document.getElementById('cartDrawer').classList.add('hidden');
+            document.getElementById('pixModal').classList.remove('hidden');
+        }
+
+        function closePixModal() {
+            document.getElementById('pixModal').classList.add('hidden');
+        }
+
+        function openVipCheckout() {
+            openPixModal(147.00, "Assinatura VIP Anual");
+        }
+
+        function confirmPixPaymentSimulated() {
+            closePixModal();
+            isLoggedIn = true;
+            isVipUser = true; // Liberado APÓS confirmação do pagamento
+            updateAuthUI();
+            renderDownloadsGrid();
+            showToast("Pagamento Confirmado! Acesso VIP Liberado!");
+            switchTab('members');
+        }
+
+        function switchTab(tab) {
+            document.getElementById('catalogTab').classList.add('hidden');
+            document.getElementById('membersTab').classList.add('hidden');
+            document.getElementById('adminTab').classList.add('hidden');
+
+            document.getElementById('navCatalogBtn').className = "px-3 py-2 text-sm font-semibold text-zinc-400 hover:text-zinc-200 border-b-2 border-transparent transition-all flex items-center space-x-2";
+            document.getElementById('navMembersBtn').className = "px-3 py-2 text-sm font-semibold text-zinc-400 hover:text-zinc-200 border-b-2 border-transparent transition-all flex items-center space-x-2 relative";
+            const adminBtn = document.getElementById('navAdminBtn');
+            if (adminBtn) adminBtn.className = "px-3 py-2 text-sm font-semibold text-zinc-400 hover:text-zinc-200 border-b-2 border-transparent transition-all flex items-center space-x-1.5";
+
+            if (tab === 'catalog') {
+                document.getElementById('catalogTab').classList.remove('hidden');
+                document.getElementById('navCatalogBtn').className = "px-3 py-2 text-sm font-semibold text-gold-400 border-b-2 border-gold-400 transition-all flex items-center space-x-2";
+            } else if (tab === 'members') {
+                document.getElementById('membersTab').classList.remove('hidden');
+                document.getElementById('navMembersBtn').className = "px-3 py-2 text-sm font-semibold text-gold-400 border-b-2 border-gold-400 transition-all flex items-center space-x-2 relative";
+                renderDownloadsGrid();
+            } else if (tab === 'admin') {
+                if (!isAdminLoggedIn) {
+                    promptAdminLogin();
+                    return;
+                }
+                document.getElementById('adminTab').classList.remove('hidden');
+                if (adminBtn) adminBtn.className = "px-3 py-2 text-sm font-semibold text-purple-400 border-b-2 border-purple-400 transition-all flex items-center space-x-1.5";
+                renderAdminProductsTable();
+            }
+        }
+
+        function renderDownloadsGrid() {
+            const nonVip = document.getElementById('nonVipBanner');
+            const vipBanner = document.getElementById('vipMemberBanner');
+            const vipSection = document.getElementById('vipDownloadsSection');
+            const grid = document.getElementById('userDownloadsGrid');
+
+            if (isVipUser) {
+                nonVip.classList.add('hidden');
+                vipBanner.classList.remove('hidden');
+                vipSection.classList.remove('hidden');
+
+                grid.innerHTML = products.map(item => `
+                    <div class="bg-cardbg border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-sm font-bold text-white mb-2">${item.title}</h3>
+                            <span class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Acesso VIP Liberado</span>
+                        </div>
+                        <div class="space-y-2 pt-4 mt-4 border-t border-zinc-800">
+                            <button onclick="showToast('Baixando .CDR')" class="w-full py-2 bg-zinc-800 text-gold-400 font-bold text-xs rounded-xl border border-gold-500/30">Baixar .CDR</button>
+                            <button onclick="showToast('Baixando .PDF')" class="w-full py-2 bg-zinc-800 text-red-400 font-bold text-xs rounded-xl border border-red-500/30">Baixar .PDF</button>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                nonVip.classList.remove('hidden');
+                vipBanner.classList.add('hidden');
+                vipSection.classList.add('hidden');
+            }
+        }
+
+        function toggleAuthModal() {
+            document.getElementById('authModal').classList.toggle('hidden');
+        }
+
+        function handleVipLogin(e) {
+            e.preventDefault();
+            toggleAuthModal();
+            openVipCheckout();
+        }
+
+        function updateAuthUI() {
+            const badge = document.getElementById('userBadge');
+            if (isVipUser) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // ADMIN FEATURES
+        function promptAdminLogin() {
+            const pass = prompt("Digite a senha mestre do Administrador (dica: admin123):");
+            if (pass === "admin123") {
+                isAdminLoggedIn = true;
+                document.getElementById('navAdminBtn').classList.remove('hidden');
+                showToast("Painel Admin Liberado!");
+                switchTab('admin');
+            } else if (pass !== null) {
+                showToast("Senha incorreta!");
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            document.getElementById('navAdminBtn').classList.add('hidden');
+            switchTab('catalog');
+            showToast("Você saiu do admin.");
+        }
+
+        function handleCreateProduct(e) {
+            e.preventDefault();
+            const newP = {
+                id: Date.now(),
+                title: document.getElementById('adminTitle').value,
+                category: document.getElementById('adminCategory').value,
+                categoryLabel: "Custom",
+                price: parseFloat(document.getElementById('adminPrice').value),
+                image: document.getElementById('adminImage').value,
+                badge: "Novo",
+                description: document.getElementById('adminDesc').value || "Molde vetorizado."
+            };
+            products.unshift(newP);
+            renderProducts();
+            renderAdminProductsTable();
+            showToast("Molde cadastrado com sucesso!");
+            document.getElementById('adminTitle').value = "";
+            document.getElementById('adminPrice').value = "";
+        }
+
+        function renderAdminProductsTable() {
+            const tbody = document.getElementById('adminProductsTable');
+            if (!tbody) return;
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td class="p-3 font-bold text-white">${p.title}</td>
+                    <td class="p-3 text-gold-400">R$ ${p.price.toFixed(2).replace('.', ',')}</td>
+                    <td class="p-3">
+                        <input type="number" step="0.10" id="pInput_${p.id}" value="${p.price.toFixed(2)}" class="w-20 bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-xs text-white">
+                        <button onclick="updatePrice(${p.id})" class="ml-1 px-2 py-1 bg-gold-500 text-black font-bold rounded text-[10px]">Salvar</button>
+                    </td>
+                    <td class="p-3 text-right">
+                        <button onclick="deleteProduct(${p.id})" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updatePrice(id) {
+            const val = parseFloat(document.getElementById(`pInput_${id}`).value);
+            const p = products.find(item => item.id === id);
+            if (p && !isNaN(val)) {
+                p.price = val;
+                renderProducts();
+                renderAdminProductsTable();
+                showToast("Preço atualizado!");
+            }
+        }
+
+        function deleteProduct(id) {
+            products = products.filter(item => item.id !== id);
+            renderProducts();
+            renderAdminProductsTable();
+            showToast("Molde removido!");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3500);
+        }
+    </script>
+</body>
+</html>
