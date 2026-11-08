@@ -68,7 +68,7 @@
         </section>
 
         <!-- Catalogo de Produtos -->
-        <section>
+        <section id="catalogSection">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
                     <h2 class="text-2xl font-black tracking-tight text-white">Catálogo de Moldes</h2>
@@ -87,6 +87,25 @@
             <!-- Grid de Produtos -->
             <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <!-- Renderizado dinamicamente -->
+            </div>
+        </section>
+
+        <!-- Área VIP Dashboard (Oculto por padrão até o usuário ativar o VIP) -->
+        <section id="vipDashboardSection" class="hidden">
+            <div class="bg-gradient-to-r from-amber-950/60 via-zinc-900 to-zinc-900 border-2 border-amber-500 rounded-3xl p-8 mb-8 shadow-2xl">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="bg-amber-500 text-zinc-950 p-4 rounded-2xl text-2xl font-bold">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div>
+                        <span class="bg-amber-500/20 text-amber-400 text-xs font-bold px-3 py-1 rounded-full uppercase">Membro VIP Ativo</span>
+                        <h2 class="text-3xl font-black text-white mt-1">Painel de Downloads Ilimitados</h2>
+                    </div>
+                </div>
+                <p class="text-zinc-300 text-sm mb-6">Parabéns! Como assinante VIP, você tem acesso liberado para baixar qualquer molde do sistema instantaneamente sem custos adicionais.</p>
+                <button onclick="showCatalog()" class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-6 py-3 rounded-xl text-xs transition-all shadow-lg">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Ver Catálogo Completo com Downloads Libertos
+                </button>
             </div>
         </section>
 
@@ -116,26 +135,22 @@
                 <div class="bg-amber-500 text-zinc-950 p-3 rounded-xl font-bold"><i class="fa-solid fa-sliders"></i></div>
                 <div>
                     <h2 class="text-2xl font-black text-white">Painel Administrativo</h2>
-                    <p class="text-xs text-zinc-400">Gerencie preços, senhas, link base do Mercado Pago e novos moldes.</p>
+                    <p class="text-xs text-zinc-400">Gerencie preços, senhas, link VIP e novos moldes.</p>
                 </div>
             </div>
 
-            <!-- Configurar Senha, Preço VIP e Base do Mercado Pago -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Configurar Senha e Preço VIP -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
                     <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-key mr-2"></i> Senha Admin</h4>
                     <input type="password" id="newAdminPass" placeholder="Nova senha" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
                     <button onclick="updateAdminPassword()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 rounded-xl text-xs border border-zinc-700">Atualizar</button>
                 </div>
                 <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
-                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-crown mr-2"></i> Preço VIP (R$)</h4>
-                    <input type="number" id="newVipPriceInput" placeholder="Ex: 150.00" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
-                    <button onclick="saveVipPrice()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar VIP</button>
-                </div>
-                <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
-                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-globe mr-2"></i> Link Base MP</h4>
-                    <input type="text" id="gatewayUrlInput" placeholder="Ex: https://link.mercadopago.com.br/seuusuario" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
-                    <button onclick="saveGatewayUrl()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar Link Base</button>
+                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-crown mr-2"></i> Preço VIP e Link VIP (R$)</h4>
+                    <input type="number" id="newVipPriceInput" placeholder="Preço (Ex: 150.00)" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-2 focus:outline-none focus:border-amber-500">
+                    <input type="text" id="vipCheckoutUrlInput" placeholder="Link de Pagamento VIP (MP)" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
+                    <button onclick="saveVipConfig()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar Configuração VIP</button>
                 </div>
             </div>
 
@@ -145,10 +160,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <input type="text" id="moldTitle" placeholder="Título (Ex: Kit Molde XRE 300)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
                     <input type="number" id="moldPrice" placeholder="Preço (Ex: 29.90)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
-                    <input type="text" id="moldCategory" placeholder="Categoria (Ex: honda, biz, titan, bros, yamaha)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
+                    <input type="text" id="moldCategory" placeholder="Categoria (honda, biz, titan, bros, yamaha)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
                     <input type="text" id="moldCategoryLabel" placeholder="Rótulo da Categoria (Ex: HONDA)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
                     <input type="text" id="moldImage" placeholder="URL da Imagem de Capa" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
-                    <input type="text" id="moldDownloadUrl" placeholder="Link do Google Drive / OneDrive" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
+                    <input type="text" id="moldDownloadUrl" placeholder="Link do Google Drive / Arquivo" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
+                    <input type="text" id="moldCheckoutUrl" placeholder="Link de Pagamento MP (Opcional)" class="md:col-span-2 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
                 </div>
                 <button onclick="addNewMold()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition-all">Salvar e Sincronizar com Firebase</button>
             </div>
@@ -166,20 +182,23 @@
         <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-3xl p-6 text-center relative">
             <button onclick="closePixModal()" class="absolute right-4 top-4 text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             <div class="bg-amber-500/10 text-amber-500 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
-                <i class="fa-solid fa-credit-card"></i>
+                <i class="fa-solid fa-crown"></i>
             </div>
-            <h3 class="text-xl font-bold mb-1 text-white" id="modalTitlePayment">Checkout Mercado Pago</h3>
-            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Clique no botão abaixo para efetuar o pagamento seguro.</p>
+            <h3 class="text-xl font-bold mb-1 text-white" id="modalTitlePayment">Checkout VIP Mercado Pago</h3>
+            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Efetue o pagamento para liberar sua Área VIP instantaneamente.</p>
             
             <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-800 mb-6">
-                <div class="text-xs text-zinc-400 mb-1">Valor do Item:</div>
+                <div class="text-xs text-zinc-400 mb-1">Valor da Assinatura Anual:</div>
                 <div class="text-2xl font-black text-amber-400" id="modalItemPriceDisplay">R$ 0,00</div>
             </div>
             
             <div class="space-y-3">
-                <button onclick="openGatewayCheckout()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-external-link-alt text-sm"></i>
-                    <span id="gatewayBtnText">Pagar no Mercado Pago</span>
+                <button onclick="openGatewayCheckout()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3.5 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-bolt text-sm"></i>
+                    <span id="gatewayBtnText">Pagar Assinatura VIP</span>
+                </button>
+                <button onclick="simulateVipActivation()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl text-xs transition-all border border-zinc-700">
+                    <i class="fa-solid fa-check-circle mr-1 text-emerald-400"></i> Já paguei (Ativar Acesso VIP agora)
                 </button>
             </div>
         </div>
@@ -202,17 +221,19 @@
         const db = firebase.firestore();
 
         let products = [
-            { id: '1', title: 'Kit Molde Honda Pop 110i (2016-2025)', price: 29.90, category: 'honda', categoryLabel: 'HONDA', image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=500&auto=format&fit=crop&q=60', downloadUrl: 'https://drive.google.com', badge: 'Mais Vendido' },
-            { id: '2', title: 'Kit Molde Yamaha Fazer 250 FZ25', price: 39.90, category: 'yamaha', categoryLabel: 'YAMAHA', image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=500&auto=format&fit=crop&q=60', downloadUrl: 'https://drive.google.com', badge: 'Novo' }
+            { id: '1', title: 'Kit Molde Honda Pop 110i (2016-2025)', price: 29.90, category: 'honda', categoryLabel: 'HONDA', image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=500&auto=format&fit=crop&q=60', downloadUrl: 'https://drive.google.com', checkoutUrl: 'https://link.mercadopago.com.br/motomoldeapp', badge: 'Mais Vendido' },
+            { id: '2', title: 'Kit Molde Yamaha Fazer 250 FZ25', price: 39.90, category: 'yamaha', categoryLabel: 'YAMAHA', image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=500&auto=format&fit=crop&q=60', downloadUrl: 'https://drive.google.com', checkoutUrl: 'https://link.mercadopago.com.br/motomoldeapp', badge: 'Novo' }
         ];
 
         let vipPrice = 150.00;
+        let vipCheckoutUrl = "https://link.mercadopago.com.br/motomoldeapp";
         let adminPass = "admin123";
-        let gatewayUrl = "";
         let activeCategory = 'all';
         let currentItemToBuy = null;
+        let isVipActive = localStorage.getItem("motomolde_vip") === "true";
 
         function initFirebaseListeners() {
+            updateVipInterface();
             renderProducts();
             renderAdminProductsList();
 
@@ -228,8 +249,6 @@
                         renderAdminProductsList();
                     }
                 }
-            }, (error) => {
-                console.warn("Offline mode:", error);
             });
 
             db.collection("settings").doc("config").onSnapshot((doc) => {
@@ -237,7 +256,7 @@
                     const data = doc.data();
                     if (data.vipPrice !== undefined) vipPrice = Number(data.vipPrice);
                     if (data.adminPass) adminPass = data.adminPass;
-                    if (data.gatewayUrl !== undefined) gatewayUrl = data.gatewayUrl;
+                    if (data.vipCheckoutUrl !== undefined) vipCheckoutUrl = data.vipCheckoutUrl;
                     
                     const bannerEl = document.getElementById("bannerVipPrice");
                     if (bannerEl) bannerEl.innerText = `Assinar VIP por R$ ${vipPrice.toFixed(2)} (Gerar PIX)`;
@@ -245,10 +264,19 @@
                     const vipInput = document.getElementById("newVipPriceInput");
                     if (vipInput) vipInput.value = vipPrice;
 
-                    const gatewayInput = document.getElementById("gatewayUrlInput");
-                    if (gatewayInput) gatewayInput.value = gatewayUrl;
+                    const vipUrlInput = document.getElementById("vipCheckoutUrlInput");
+                    if (vipUrlInput) vipUrlInput.value = vipCheckoutUrl;
                 }
             });
+        }
+
+        function updateVipInterface() {
+            const vipBtnText = document.getElementById("vipBtnText");
+            if (isVipActive) {
+                if (vipBtnText) vipBtnText.innerText = "Painel VIP Ativo";
+            } else {
+                if (vipBtnText) vipBtnText.innerText = "Área VIP";
+            }
         }
 
         function renderProducts() {
@@ -274,6 +302,22 @@
             }
 
             filtered.forEach(p => {
+                let actionButton = `
+                    <button onclick="buyProduct('${p.id}', '${p.title}', ${p.price})" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2.5 rounded-xl text-xs transition-all shadow-md flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span>Comprar (R$ ${Number(p.price).toFixed(2)})</span>
+                    </button>
+                `;
+
+                if (isVipActive) {
+                    actionButton = `
+                        <a href="${p.downloadUrl}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all shadow-md flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Baixar Molde (VIP Grátis)</span>
+                        </a>
+                    `;
+                }
+
                 grid.innerHTML += `
                     <div class="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-xl hover:border-amber-500/50 transition-all flex flex-col justify-between">
                         <div>
@@ -284,14 +328,11 @@
                             </div>
                             <div class="p-5">
                                 <h3 class="font-bold text-sm text-white mb-2 line-clamp-2">${p.title}</h3>
-                                <div class="text-lg font-black text-amber-400">R$ ${Number(p.price).toFixed(2)}</div>
+                                <div class="text-lg font-black text-amber-400">${isVipActive ? '<span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded uppercase">Incluso no VIP</span>' : `R$ ${Number(p.price).toFixed(2)}`}</div>
                             </div>
                         </div>
                         <div class="p-5 pt-0">
-                            <button onclick="buyProduct('${p.id}', '${p.title}', ${p.price})" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2.5 rounded-xl text-xs transition-all shadow-md flex items-center justify-center space-x-2">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                                <span>Comprar</span>
-                            </button>
+                            ${actionButton}
                         </div>
                     </div>
                 `;
@@ -319,11 +360,14 @@
             activeCategory = 'all';
             const searchInput = document.getElementById("searchInput");
             if (searchInput) searchInput.value = "";
+            document.getElementById("catalogSection").classList.remove("hidden");
+            document.getElementById("vipDashboardSection").classList.add("hidden");
             renderProducts();
         }
 
         function buyProduct(id, title, price) {
             currentItemToBuy = { id, title, price, type: 'product' };
+            document.getElementById("modalTitlePayment").innerText = "Checkout Mercado Pago";
             document.getElementById("pixModalSubtitle").innerText = `Produto: ${title}`;
             document.getElementById("modalItemPriceDisplay").innerText = `R$ ${price.toFixed(2)}`;
             document.getElementById("gatewayBtnText").innerText = `Pagar R$ ${price.toFixed(2)} no Mercado Pago`;
@@ -331,8 +375,17 @@
         }
 
         function openVipModal() {
+            if (isVipActive) {
+                // Se já for VIP, abre o painel VIP exclusivo
+                document.getElementById("catalogSection").classList.add("hidden");
+                document.getElementById("vipDashboardSection").classList.remove("hidden");
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
             currentItemToBuy = { title: 'Acesso VIP Anual', price: vipPrice, type: 'vip' };
-            document.getElementById("pixModalSubtitle").innerText = `Assinatura VIP Anual`;
+            document.getElementById("modalTitlePayment").innerText = "Assinatura VIP Anual";
+            document.getElementById("pixModalSubtitle").innerText = `Acesso Ilimitado a Todo o Acervo`;
             document.getElementById("modalItemPriceDisplay").innerText = `R$ ${Number(vipPrice).toFixed(2)}`;
             document.getElementById("gatewayBtnText").innerText = `Pagar R$ ${Number(vipPrice).toFixed(2)} no Mercado Pago`;
             document.getElementById("pixModal").classList.remove("hidden");
@@ -344,25 +397,42 @@
 
         function openGatewayCheckout() {
             if (!currentItemToBuy) return;
-            const price = currentItemToBuy.price;
-            const title = currentItemToBuy.title;
 
-            if (gatewayUrl && gatewayUrl.trim().startsWith("http")) {
-                window.open(gatewayUrl, '_blank');
+            let targetUrl = vipCheckoutUrl;
+
+            if (currentItemToBuy.type === 'product') {
+                const prod = products.find(p => p.id === currentItemToBuy.id);
+                if (prod && prod.checkoutUrl && prod.checkoutUrl.trim().startsWith("http")) {
+                    targetUrl = prod.checkoutUrl.trim();
+                }
+            }
+
+            if (targetUrl && targetUrl.startsWith("http")) {
+                window.open(targetUrl, '_blank');
                 closePixModal();
-                
-                // Após o cliente efetuar o pagamento e retornar, você pode liberar o download:
+
                 if (currentItemToBuy.type === 'product') {
                     const prod = products.find(p => p.id === currentItemToBuy.id);
                     if (prod && prod.downloadUrl) {
                         window.open(prod.downloadUrl, '_blank');
                     }
-                } else if (currentItemToBuy.type === 'vip') {
-                    alert("Aguardando confirmação do Mercado Pago para liberação do Acesso VIP.");
                 }
             } else {
-                alert("Configure o seu link do Mercado Pago no Painel Administrativo.");
+                alert("Configure o link de pagamento do Mercado Pago no painel administrativo.");
             }
+        }
+
+        function simulateVipActivation() {
+            isVipActive = true;
+            localStorage.setItem("motomolde_vip", "true");
+            closePixModal();
+            updateVipInterface();
+            alert("Parabéns! Pagamento confirmado. Sua Área VIP foi liberada com sucesso!");
+            
+            // Abre o painel VIP
+            document.getElementById("catalogSection").classList.add("hidden");
+            document.getElementById("vipDashboardSection").classList.remove("hidden");
+            renderProducts();
         }
 
         function openAdminLogin() {
@@ -392,29 +462,25 @@
             const newPass = document.getElementById("newAdminPass").value;
             if (!newPass) return alert("Digite uma nova senha válida.");
             adminPass = newPass;
-            db.collection("settings").doc("config").set({ adminPass: newPass, vipPrice: vipPrice, gatewayUrl: gatewayUrl }, { merge: true })
+            db.collection("settings").doc("config").set({ adminPass: newPass, vipPrice: vipPrice, vipCheckoutUrl: vipCheckoutUrl }, { merge: true })
                 .then(() => alert("Senha atualizada com sucesso!"))
                 .catch(err => alert("Erro ao salvar: " + err.message));
         }
 
-        function saveVipPrice() {
+        function saveVipConfig() {
             const newPrice = parseFloat(document.getElementById("newVipPriceInput").value);
-            if (isNaN(newPrice)) return alert("Digite um valor numérico válido.");
+            const newUrl = document.getElementById("vipCheckoutUrlInput").value.trim();
+            if (isNaN(newPrice)) return alert("Digite um valor numérico válido para o VIP.");
+            
             vipPrice = newPrice;
-            db.collection("settings").doc("config").set({ adminPass: adminPass, vipPrice: vipPrice, gatewayUrl: gatewayUrl }, { merge: true })
+            vipCheckoutUrl = newUrl;
+
+            db.collection("settings").doc("config").set({ adminPass: adminPass, vipPrice: vipPrice, vipCheckoutUrl: vipCheckoutUrl }, { merge: true })
                 .then(() => {
-                    alert("Preço VIP atualizado!");
+                    alert("Configuração VIP atualizada com sucesso!");
                     const bannerEl = document.getElementById("bannerVipPrice");
                     if (bannerEl) bannerEl.innerText = `Assinar VIP por R$ ${Number(vipPrice).toFixed(2)} (Gerar PIX)`;
                 })
-                .catch(err => alert("Erro ao salvar: " + err.message));
-        }
-
-        function saveGatewayUrl() {
-            const url = document.getElementById("gatewayUrlInput").value.trim();
-            gatewayUrl = url;
-            db.collection("settings").doc("config").set({ adminPass: adminPass, vipPrice: vipPrice, gatewayUrl: gatewayUrl }, { merge: true })
-                .then(() => alert("Link base salvo com sucesso no Firebase!"))
                 .catch(err => alert("Erro ao salvar: " + err.message));
         }
 
@@ -425,23 +491,25 @@
             const categoryLabel = document.getElementById("moldCategoryLabel").value;
             const image = document.getElementById("moldImage").value;
             const downloadUrl = document.getElementById("moldDownloadUrl").value;
+            const checkoutUrl = document.getElementById("moldCheckoutUrl").value.trim();
 
             if (!title || isNaN(price) || !category || !image || !downloadUrl) {
-                return alert("Preencha todos os campos corretamente.");
+                return alert("Preencha todos os campos obrigatórios do molde.");
             }
 
             const newId = Date.now().toString();
-            const moldData = { title, price, category, categoryLabel, image, downloadUrl, badge: 'Novo' };
+            const moldData = { title, price, category, categoryLabel, image, downloadUrl, checkoutUrl, badge: 'Novo' };
 
             db.collection("products").doc(newId).set(moldData)
                 .then(() => {
-                    alert("Molde cadastrado e sincronizado!");
+                    alert("Molde cadastrado e sincronizado com sucesso!");
                     document.getElementById("moldTitle").value = "";
                     document.getElementById("moldPrice").value = "";
                     document.getElementById("moldCategory").value = "";
                     document.getElementById("moldCategoryLabel").value = "";
                     document.getElementById("moldImage").value = "";
                     document.getElementById("moldDownloadUrl").value = "";
+                    document.getElementById("moldCheckoutUrl").value = "";
                 })
                 .catch(err => alert("Erro ao salvar molde: " + err.message));
         }
