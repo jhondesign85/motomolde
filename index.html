@@ -58,7 +58,7 @@
             <div class="z-10 w-full md:w-auto">
                 <button onclick="openVipModal()" class="w-full md:w-auto bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold px-8 py-4 rounded-2xl shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-bolt"></i>
-                    <span id="bannerVipPrice">Assinar VIP (Gerar PIX de Pagamento)</span>
+                    <span id="bannerVipPrice">Assinar VIP (Gerar Pagamento)</span>
                 </button>
             </div>
         </section>
@@ -135,7 +135,7 @@
 
     </main>
 
-    <!-- Footer com Atalho Secreto Admin (Clique duplo no texto de copyright abre o painel) -->
+    <!-- Footer com Atalho Secreto Admin (Duplo clique no copyright abre o painel) -->
     <footer class="bg-zinc-900 border-t border-zinc-800 py-8 mt-16 text-center text-xs text-zinc-500">
         <p ondblclick="openAdminLogin()" class="cursor-pointer select-none">&copy; 2026 Moto Molde Digital - Todos os direitos reservados.</p>
     </footer>
@@ -159,7 +159,7 @@
                 <div class="bg-amber-500 text-zinc-950 p-3 rounded-xl font-bold"><i class="fa-solid fa-sliders"></i></div>
                 <div>
                     <h2 class="text-2xl font-black text-white">Painel Administrativo</h2>
-                    <p class="text-xs text-zinc-400">Gerencie preços, senhas, link VIP e novos moldes.</p>
+                    <p class="text-xs text-zinc-400">Gerencie preços, senhas e novos moldes.</p>
                 </div>
             </div>
 
@@ -171,9 +171,8 @@
                     <button onclick="updateAdminPassword()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 rounded-xl text-xs border border-zinc-700">Atualizar</button>
                 </div>
                 <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5">
-                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-crown mr-2"></i> Preço VIP e Link VIP (R$)</h4>
-                    <input type="number" id="newVipPriceInput" placeholder="Preço (Ex: 150.00)" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-2 focus:outline-none focus:border-amber-500">
-                    <input type="text" id="vipCheckoutUrlInput" placeholder="Link de Pagamento VIP (MP)" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
+                    <h4 class="font-bold text-sm text-amber-400 mb-3"><i class="fa-solid fa-crown mr-2"></i> Preço VIP (R$)</h4>
+                    <input type="number" id="newVipPriceInput" placeholder="Preço (Ex: 150.00)" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-xs mb-3 focus:outline-none focus:border-amber-500">
                     <button onclick="saveVipConfig()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-2 rounded-xl text-xs">Salvar Configuração VIP</button>
                 </div>
             </div>
@@ -188,8 +187,7 @@
                     <input type="text" id="moldCategory" placeholder="Categoria (honda, biz, titan, bros, yamaha)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
                     <input type="text" id="moldCategoryLabel" placeholder="Rótulo da Categoria (Ex: HONDA)" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
                     <input type="text" id="moldImage" placeholder="URL da Imagem de Capa" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
-                    <input type="text" id="moldDownloadUrl" placeholder="Link do Google Drive / Arquivo" class="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
-                    <input type="text" id="moldCheckoutUrl" placeholder="Link de Pagamento MP Específico (Opcional)" class="md:col-span-2 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
+                    <input type="text" id="moldDownloadUrl" placeholder="Link do Google Drive / Arquivo" class="md:col-span-2 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-amber-500">
                 </div>
                 <div class="flex space-x-2">
                     <button onclick="saveMold()" id="saveMoldBtn" class="flex-1 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition-all">Salvar Molde no Firebase</button>
@@ -212,8 +210,8 @@
             <div class="bg-amber-500/10 text-amber-500 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
                 <i class="fa-solid fa-crown"></i>
             </div>
-            <h3 class="text-xl font-bold mb-1 text-white" id="modalTitlePayment">Checkout Mercado Pago</h3>
-            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Efetue o pagamento seguro.</p>
+            <h3 class="text-xl font-bold mb-1 text-white" id="modalTitlePayment">Checkout Automático MP</h3>
+            <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Gerando link seguro...</p>
             
             <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-800 mb-6">
                 <div class="text-xs text-zinc-400 mb-1">Valor do Item:</div>
@@ -221,9 +219,9 @@
             </div>
             
             <div class="space-y-3">
-                <button onclick="openGatewayCheckout()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3.5 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center space-x-2">
+                <button id="gatewayBtnText" onclick="openGatewayCheckout()" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3.5 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-bolt text-sm"></i>
-                    <span id="gatewayBtnText">Pagar no Mercado Pago</span>
+                    <span>Ir para o Checkout do Mercado Pago</span>
                 </button>
             </div>
         </div>
@@ -246,12 +244,11 @@
         const db = firebase.firestore();
 
         let products = [
-            { id: '1', title: 'Kit Molde Honda Pop 110i (2016-2025)', price: 29.90, category: 'honda', categoryLabel: 'HONDA', image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=500&auto=format&fit=crop&q=60', downloadUrl: 'https://drive.google.com', checkoutUrl: 'https://link.mercadopago.com.br/motomoldeapp', badge: 'Mais Vendido' },
-            { id: '2', title: 'Kit Molde Yamaha Fazer 250 FZ25', price: 39.90, category: 'yamaha', categoryLabel: 'YAMAHA', image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=500&auto=format&fit=crop&q=60', downloadUrl: 'https://drive.google.com', checkoutUrl: 'https://link.mercadopago.com.br/motomoldeapp', badge: 'Novo' }
+            { id: '1', title: 'Kit Molde Honda Pop 110i (2016-2025)', price: 29.90, category: 'honda', categoryLabel: 'HONDA', image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=500&auto=format&fit=crop&q=60', downloadUrl: 'https://drive.google.com', badge: 'Mais Vendido' },
+            { id: '2', title: 'Kit Molde Yamaha Fazer 250 FZ25', price: 39.90, category: 'yamaha', categoryLabel: 'YAMAHA', image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=500&auto=format&fit=crop&q=60', downloadUrl: 'https://drive.google.com', badge: 'Novo' }
         ];
 
         let vipPrice = 150.00;
-        let vipCheckoutUrl = "https://link.mercadopago.com.br/motomoldeapp";
         let adminPass = "admin123";
         let activeCategory = 'all';
         let currentItemToBuy = null;
@@ -259,7 +256,6 @@
         let vipUserName = localStorage.getItem("motomolde_vip_name") || "";
 
         function initFirebaseListeners() {
-            // Verifica se o usuário retornou do Mercado Pago com sucesso para o VIP
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get("vip_success") === "true") {
                 document.getElementById("catalogSection").classList.add("hidden");
@@ -291,16 +287,12 @@
                     const data = doc.data();
                     if (data.vipPrice !== undefined) vipPrice = Number(data.vipPrice);
                     if (data.adminPass) adminPass = data.adminPass;
-                    if (data.vipCheckoutUrl !== undefined) vipCheckoutUrl = data.vipCheckoutUrl;
                     
                     const bannerEl = document.getElementById("bannerVipPrice");
                     if (bannerEl) bannerEl.innerText = `Assinar VIP por R$ ${vipPrice.toFixed(2)} (Gerar PIX)`;
                     
                     const vipInput = document.getElementById("newVipPriceInput");
                     if (vipInput) vipInput.value = vipPrice;
-
-                    const vipUrlInput = document.getElementById("vipCheckoutUrlInput");
-                    if (vipUrlInput) vipUrlInput.value = vipCheckoutUrl;
                 }
             });
         }
@@ -403,11 +395,13 @@
         }
 
         function buyProduct(id, title, price) {
-            currentItemToBuy = { id, title, price, type: 'product' };
-            document.getElementById("modalTitlePayment").innerText = "Checkout Mercado Pago";
+            // Garante que o preço seja tratado corretamente como número
+            const numericPrice = Number(price) || 0;
+            currentItemToBuy = { id, title, price: numericPrice, type: 'product' };
+            
+            document.getElementById("modalTitlePayment").innerText = "Checkout Automático MP";
             document.getElementById("pixModalSubtitle").innerText = `Produto: ${title}`;
-            document.getElementById("modalItemPriceDisplay").innerText = `R$ ${price.toFixed(2)}`;
-            document.getElementById("gatewayBtnText").innerText = `Pagar R$ ${price.toFixed(2)} no Mercado Pago`;
+            document.getElementById("modalItemPriceDisplay").innerText = `R$ ${numericPrice.toFixed(2)}`;
             document.getElementById("pixModal").classList.remove("hidden");
         }
 
@@ -424,11 +418,12 @@
                 return;
             }
 
-            currentItemToBuy = { title: 'Acesso VIP Anual', price: vipPrice, type: 'vip' };
+            const numericVipPrice = Number(vipPrice) || 150.00;
+            currentItemToBuy = { title: 'Acesso VIP Anual', price: numericVipPrice, type: 'vip' };
+            
             document.getElementById("modalTitlePayment").innerText = "Assinatura VIP Anual";
             document.getElementById("pixModalSubtitle").innerText = `Acesso Ilimitado a Todo o Acervo`;
-            document.getElementById("modalItemPriceDisplay").innerText = `R$ ${Number(vipPrice).toFixed(2)}`;
-            document.getElementById("gatewayBtnText").innerText = `Pagar R$ ${Number(vipPrice).toFixed(2)} no Mercado Pago`;
+            document.getElementById("modalItemPriceDisplay").innerText = `R$ ${numericVipPrice.toFixed(2)}`;
             document.getElementById("pixModal").classList.remove("hidden");
         }
 
@@ -436,37 +431,35 @@
             document.getElementById("pixModal").classList.add("hidden");
         }
 
-        function openGatewayCheckout() {
+        async function openGatewayCheckout() {
             if (!currentItemToBuy) return;
 
-            let targetUrl = vipCheckoutUrl;
+            try {
+                const btn = document.getElementById("gatewayBtnText");
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Gerando Checkout...`;
 
-            if (currentItemToBuy.type === 'product') {
-                const prod = products.find(p => p.id === currentItemToBuy.id);
-                if (prod && prod.checkoutUrl && prod.checkoutUrl.trim().startsWith("http")) {
-                    targetUrl = prod.checkoutUrl.trim();
+                const response = await fetch('/api/create-preference', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: currentItemToBuy.title,
+                        price: Number(currentItemToBuy.price),
+                        type: currentItemToBuy.type,
+                        id: currentItemToBuy.id || 'vip'
+                    })
+                });
+
+                const data = await response.json();
+                if (data.init_point) {
+                    window.location.href = data.init_point;
+                } else {
+                    alert("Erro ao gerar link de pagamento automático.");
+                    btn.innerHTML = `<span>Ir para o Checkout do Mercado Pago</span>`;
                 }
-            }
-
-            if (targetUrl && targetUrl.startsWith("http")) {
-                // Se for VIP, adicionamos o parâmetro secreto de retorno para a página de cadastro
-                let finalRedirectUrl = targetUrl;
-                if (currentItemToBuy.type === 'vip') {
-                    const siteUrl = window.location.origin + window.location.pathname;
-                    finalRedirectUrl = targetUrl + (targetUrl.includes('?') ? '&' : '?') + 'back_url=' + encodeURIComponent(siteUrl + '?vip_success=true');
-                }
-
-                window.open(finalRedirectUrl, '_blank');
-                closePixModal();
-
-                if (currentItemToBuy.type === 'product') {
-                    const prod = products.find(p => p.id === currentItemToBuy.id);
-                    if (prod && prod.downloadUrl) {
-                        window.open(prod.downloadUrl, '_blank');
-                    }
-                }
-            } else {
-                alert("Configure o link de pagamento do Mercado Pago no painel administrativo.");
+            } catch (err) {
+                console.error(err);
+                alert("Erro de conexão com o servidor de pagamentos.");
+                document.getElementById("gatewayBtnText").innerHTML = `<span>Ir para o Checkout do Mercado Pago</span>`;
             }
         }
 
@@ -522,24 +515,21 @@
             const newPass = document.getElementById("newAdminPass").value;
             if (!newPass) return alert("Digite uma nova senha válida.");
             adminPass = newPass;
-            db.collection("settings").doc("config").set({ adminPass: newPass, vipPrice: vipPrice, vipCheckoutUrl: vipCheckoutUrl }, { merge: true })
+            db.collection("settings").doc("config").set({ adminPass: newPass, vipPrice: vipPrice }, { merge: true })
                 .then(() => alert("Senha atualizada com sucesso!"))
                 .catch(err => alert("Erro ao salvar: " + err.message));
         }
 
         function saveVipConfig() {
             const newPrice = parseFloat(document.getElementById("newVipPriceInput").value);
-            const newUrl = document.getElementById("vipCheckoutUrlInput").value.trim();
             if (isNaN(newPrice)) return alert("Digite um valor numérico válido para o VIP.");
             
             vipPrice = newPrice;
-            vipCheckoutUrl = newUrl;
-
-            db.collection("settings").doc("config").set({ adminPass: adminPass, vipPrice: vipPrice, vipCheckoutUrl: vipCheckoutUrl }, { merge: true })
+            db.collection("settings").doc("config").set({ adminPass: adminPass, vipPrice: vipPrice }, { merge: true })
                 .then(() => {
                     alert("Configuração VIP atualizada com sucesso!");
                     const bannerEl = document.getElementById("bannerVipPrice");
-                    if (bannerEl) bannerEl.innerText = `Assinar VIP por R$ ${Number(vipPrice).toFixed(2)} (Gerar PIX)`;
+                    if (bannerEl) bannerEl.innerText = `Assinar VIP por R$ ${Number(vipPrice).toFixed(2)} (Gerar Pagamento)`;
                 })
                 .catch(err => alert("Erro ao salvar: " + err.message));
         }
@@ -552,13 +542,12 @@
             const categoryLabel = document.getElementById("moldCategoryLabel").value;
             const image = document.getElementById("moldImage").value;
             const downloadUrl = document.getElementById("moldDownloadUrl").value;
-            const checkoutUrl = document.getElementById("moldCheckoutUrl").value.trim();
 
             if (!title || isNaN(price) || !category || !image || !downloadUrl) {
                 return alert("Preencha todos os campos obrigatórios do molde.");
             }
 
-            const moldData = { title, price, category, categoryLabel, image, downloadUrl, checkoutUrl, badge: 'Novo' };
+            const moldData = { title, price, category, categoryLabel, image, downloadUrl, badge: 'Novo' };
             const moldId = editingId ? editingId : Date.now().toString();
 
             db.collection("products").doc(moldId).set(moldData)
@@ -580,7 +569,6 @@
             document.getElementById("moldCategoryLabel").value = p.categoryLabel || '';
             document.getElementById("moldImage").value = p.image;
             document.getElementById("moldDownloadUrl").value = p.downloadUrl;
-            document.getElementById("moldCheckoutUrl").value = p.checkoutUrl || '';
 
             document.getElementById("formTitleAction").innerHTML = `<i class="fa-solid fa-pen-to-square mr-2"></i> Editando Molde: ${p.title}`;
             document.getElementById("saveMoldBtn").innerText = "Atualizar Molde no Firebase";
@@ -597,7 +585,6 @@
             document.getElementById("moldCategoryLabel").value = "";
             document.getElementById("moldImage").value = "";
             document.getElementById("moldDownloadUrl").value = "";
-            document.getElementById("moldCheckoutUrl").value = "";
 
             document.getElementById("formTitleAction").innerHTML = `<i class="fa-solid fa-plus-circle mr-2"></i> Cadastrar Novo Molde`;
             document.getElementById("saveMoldBtn").innerText = "Salvar Molde no Firebase";
