@@ -18,8 +18,6 @@ app.post('/api/create-preference', async (req, res) => {
         }
 
         const preference = new Preference(client);
-        
-        // Usa o domínio oficial do Render ou detecta automaticamente
         const host = process.env.RENDER_EXTERNAL_URL || 'https://motomolde.onrender.com';
 
         const result = await preference.create({
@@ -38,6 +36,11 @@ app.post('/api/create-preference', async (req, res) => {
                     pending: `${host}/`
                 },
                 auto_return: 'approved',
+                // Adicionamos regras para garantir que os meios de pagamento estejam abertos
+                payment_methods: {
+                    excluded_payment_types: [],
+                    installments: 1
+                }
             }
         });
 
