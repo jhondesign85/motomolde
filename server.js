@@ -6,7 +6,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Inicializa o cliente do Mercado Pago com a variável de ambiente
 const accessToken = process.env.MP_ACCESS_TOKEN || '';
 const client = new MercadoPagoConfig({ accessToken: accessToken });
 
@@ -15,12 +14,13 @@ app.post('/api/create-preference', async (req, res) => {
         const { title, price, type, id } = req.body;
         
         if (!accessToken) {
-            console.error("ERRO: MP_ACCESS_TOKEN não configurado no Render!");
             return res.status(500).json({ error: "Token do Mercado Pago não configurado no servidor." });
         }
 
         const preference = new Preference(client);
-        const host = req.protocol + '://' + req.get('host');
+        
+        // Usa o domínio oficial do Render ou detecta automaticamente
+        const host = process.env.RENDER_EXTERNAL_URL || 'https://motomolde.onrender.com';
 
         const result = await preference.create({
             body: {
@@ -48,7 +48,6 @@ app.post('/api/create-preference', async (req, res) => {
     }
 });
 
-// Servir o frontend estático
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
