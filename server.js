@@ -6,13 +6,18 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configuração do Mercado Pago utilizando a variável de ambiente do Render
-const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN || '' });
+// Inicializa o cliente do Mercado Pago com a variável de ambiente
+const accessToken = process.env.MP_ACCESS_TOKEN || '';
+const client = new MercadoPagoConfig({ accessToken: accessToken });
 
-// Rota para criar preferência de pagamento automática no Mercado Pago
 app.post('/api/create-preference', async (req, res) => {
     try {
         const { title, price, type, id } = req.body;
+        
+        if (!accessToken) {
+            console.error("ERRO: MP_ACCESS_TOKEN não configurado no Render!");
+            return res.status(500).json({ error: "Token do Mercado Pago não configurado no servidor." });
+        }
 
         const preference = new Preference(client);
         const host = req.protocol + '://' + req.get('host');
@@ -21,8 +26,8 @@ app.post('/api/create-preference', async (req, res) => {
             body: {
                 items: [
                     {
-                        id: id || 'vip-anual',
-                        title: title,
+                        id: String(id || 'vip-anual'),
+                        title: String(title || 'Produto Moto Molde'),
                         quantity: 1,
                         unit_price: Number(price)
                     }
@@ -38,12 +43,12 @@ app.post('/api/create-preference', async (req, res) => {
 
         res.json({ init_point: result.init_point });
     } catch (error) {
-        console.error("Erro ao criar preferência MP:", error);
-        res.status(500).json({ error: error.message });
+        console.error("Erro detalhado ao criar preferência MP:", error);
+        res.status(500).json({ error: error.message || "Erro interno ao gerar pagamento" });
     }
 });
 
-// Servir o arquivo frontend (index.html)
+// Servir o frontend estático
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
