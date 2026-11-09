@@ -67,14 +67,14 @@
             </div>
         </section>
 
-        <!-- Cadastro VIP (Oculto até o usuário clicar em cadastrar após o pagamento) -->
+        <!-- Cadastro VIP (Aparece após o pagamento do VIP) -->
         <section id="vipRegisterSection" class="hidden max-w-xl mx-auto bg-zinc-900 border border-amber-500/50 rounded-3xl p-8 mb-12 shadow-2xl">
             <div class="text-center mb-6">
                 <div class="bg-amber-500/10 text-amber-500 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl">
                     <i class="fa-solid fa-user-shield"></i>
                 </div>
                 <h2 class="text-2xl font-black text-white">Finalize seu Cadastro VIP</h2>
-                <p class="text-zinc-400 text-xs mt-1">Preencha seus dados para criar sua conta e liberar o acesso vitalício/anual ao acervo.</p>
+                <p class="text-zinc-400 text-xs mt-1">Preencha seus dados para criar sua conta e liberar o acesso completo ao acervo.</p>
             </div>
             <div class="space-y-4">
                 <div>
@@ -216,7 +216,7 @@
             <div class="bg-amber-500/10 text-amber-500 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
                 <i class="fa-solid fa-crown"></i>
             </div>
-            <h3 class="text-xl font-bold mb-1 text-white" id="modalTitlePayment">Checkout VIP Mercado Pago</h3>
+            <h3 class="text-xl font-bold mb-1 text-white" id="modalTitlePayment">Checkout Mercado Pago</h3>
             <p class="text-zinc-400 text-xs mb-4" id="pixModalSubtitle">Efetue o pagamento seguro.</p>
             
             <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-800 mb-6">
@@ -448,7 +448,193 @@
                 closePixModal();
 
                 if (currentItemToBuy.type === 'vip') {
-                    // Após abrir o pagamento VIP, exibe a tela de cadastro para finalizar o acesso
                     document.getElementById("catalogSection").classList.add("hidden");
                     document.getElementById("bannerVipSection").classList.add("hidden");
-                    document.getElementById("vipRegisterSection").classList.remove
+                    document.getElementById("vipRegisterSection").classList.remove("hidden");
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else if (currentItemToBuy.type === 'product') {
+                    const prod = products.find(p => p.id === currentItemToBuy.id);
+                    if (prod && prod.downloadUrl) {
+                        window.open(prod.downloadUrl, '_blank');
+                    }
+                }
+            } else {
+                alert("Configure o link de pagamento do Mercado Pago no painel administrativo.");
+            }
+        }
+
+        function completeVipRegistration() {
+            const name = document.getElementById("vipRegName").value.trim();
+            const email = document.getElementById("vipRegEmail").value.trim();
+            const pass = document.getElementById("vipRegPass").value.trim();
+
+            if (!name || !email || !pass) {
+                return alert("Por favor, preencha todos os campos do cadastro.");
+            }
+
+            isVipActive = true;
+            vipUserName = name;
+            localStorage.setItem("motomolde_vip", "true");
+            localStorage.setItem("motomolde_vip_name", name);
+            localStorage.setItem("motomolde_vip_email", email);
+
+            updateVipInterface();
+            alert("Cadastro realizado e Acesso VIP liberado com sucesso!");
+
+            document.getElementById("vipRegisterSection").classList.add("hidden");
+            document.getElementById("vipDashboardSection").classList.remove("hidden");
+            document.getElementById("vipWelcomeTitle").innerText = `Bem-vindo, ${name}!`;
+            renderProducts();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openAdminLogin() {
+            document.getElementById("adminLoginModal").classList.remove("hidden");
+        }
+
+        function closeAdminLogin() {
+            document.getElementById("adminLoginModal").classList.add("hidden");
+        }
+
+        function verifyAdminLogin() {
+            const pass = document.getElementById("adminPasswordInput").value;
+            if (pass === adminPass) {
+                closeAdminLogin();
+                document.getElementById("adminDashboardModal").classList.remove("hidden");
+                renderAdminProductsList();
+            } else {
+                alert("Senha incorreta!");
+            }
+        }
+
+        function closeAdminDashboard() {
+            document.getElementById("adminDashboardModal").classList.add("hidden");
+        }
+
+        function updateAdminPassword() {
+            const newPass = document.getElementById("newAdminPass").value;
+            if (!newPass) return alert("Digite uma nova senha válida.");
+            adminPass = newPass;
+            db.collection("settings").doc("config").set({ adminPass: newPass, vipPrice: vipPrice, vipCheckoutUrl: vipCheckoutUrl }, { merge: true })
+                .then(() => alert("Senha atualizada com sucesso!"))
+                .catch(err => alert("Erro ao salvar: " + err.message));
+        }
+
+        function saveVipConfig() {
+            const newPrice = parseFloat(document.getElementById("newVipPriceInput").value);
+            const newUrl = document.getElementById("vipCheckoutUrlInput").value.trim();
+            if (isNaN(newPrice)) return alert("Digite um valor numérico válido para o VIP.");
+            
+            vipPrice = newPrice;
+            vipCheckoutUrl = newUrl;
+
+            db.collection("settings").doc("config").set({ adminPass: adminPass, vipPrice: vipPrice, vipCheckoutUrl: vipCheckoutUrl }, { merge: true })
+                .then(() => {
+                    alert("Configuração VIP atualizada com sucesso!");
+                    const bannerEl = document.getElementById("bannerVipPrice");
+                    if (bannerEl) bannerEl.innerText = `Assinar VIP por R$ ${Number(vipPrice).toFixed(2)} (Gerar PIX)`;
+                })
+                .catch(err => alert("Erro ao salvar: " + err.message));
+        }
+
+        function saveMold() {
+            const editingId = document.getElementById("editingMoldId").value;
+            const title = document.getElementById("moldTitle").value;
+            const price = parseFloat(document.getElementById("moldPrice").value);
+            const category = document.getElementById("moldCategory").value.toLowerCase();
+            const categoryLabel = document.getElementById("moldCategoryLabel").value;
+            const image = document.getElementById("moldImage").value;
+            const downloadUrl = document.getElementById("moldDownloadUrl").value;
+            const checkoutUrl = document.getElementById("moldCheckoutUrl").value.trim();
+
+            if (!title || isNaN(price) || !category || !image || !downloadUrl) {
+                return alert("Preencha todos os campos obrigatórios do molde.");
+            }
+
+            const moldData = { title, price, category, categoryLabel, image, downloadUrl, checkoutUrl, badge: 'Novo' };
+            const moldId = editingId ? editingId : Date.now().toString();
+
+            db.collection("products").doc(moldId).set(moldData)
+                .then(() => {
+                    alert(editingId ? "Molde atualizado com sucesso!" : "Molde cadastrado e sincronizado!");
+                    resetMoldForm();
+                })
+                .catch(err => alert("Erro ao salvar molde: " + err.message));
+        }
+
+        function editMold(id) {
+            const p = products.find(prod => prod.id === id);
+            if (!p) return;
+
+            document.getElementById("editingMoldId").value = p.id;
+            document.getElementById("moldTitle").value = p.title;
+            document.getElementById("moldPrice").value = p.price;
+            document.getElementById("moldCategory").value = p.category;
+            document.getElementById("moldCategoryLabel").value = p.categoryLabel || '';
+            document.getElementById("moldImage").value = p.image;
+            document.getElementById("moldDownloadUrl").value = p.downloadUrl;
+            document.getElementById("moldCheckoutUrl").value = p.checkoutUrl || '';
+
+            document.getElementById("formTitleAction").innerHTML = `<i class="fa-solid fa-pen-to-square mr-2"></i> Editando Molde: ${p.title}`;
+            document.getElementById("saveMoldBtn").innerText = "Atualizar Molde no Firebase";
+            document.getElementById("cancelEditBtn").classList.remove("hidden");
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetMoldForm() {
+            document.getElementById("editingMoldId").value = "";
+            document.getElementById("moldTitle").value = "";
+            document.getElementById("moldPrice").value = "";
+            document.getElementById("moldCategory").value = "";
+            document.getElementById("moldCategoryLabel").value = "";
+            document.getElementById("moldImage").value = "";
+            document.getElementById("moldDownloadUrl").value = "";
+            document.getElementById("moldCheckoutUrl").value = "";
+
+            document.getElementById("formTitleAction").innerHTML = `<i class="fa-solid fa-plus-circle mr-2"></i> Cadastrar Novo Molde`;
+            document.getElementById("saveMoldBtn").innerText = "Salvar Molde no Firebase";
+            document.getElementById("cancelEditBtn").classList.add("hidden");
+        }
+
+        function deleteMold(id) {
+            if (confirm("Deseja realmente excluir este molde?")) {
+                db.collection("products").doc(id).delete()
+                    .then(() => alert("Molde removido com sucesso!"))
+                    .catch(err => alert("Erro ao remover: " + err.message));
+            }
+        }
+
+        function renderAdminProductsList() {
+            const list = document.getElementById("adminProductsList");
+            if (!list) return;
+            list.innerHTML = "";
+            if (products.length === 0) {
+                list.innerHTML = `<p class="text-zinc-500 text-xs">Nenhum molde cadastrado.</p>`;
+                return;
+            }
+            products.forEach(p => {
+                list.innerHTML += `
+                    <div class="flex items-center justify-between bg-zinc-900 p-3 rounded-xl border border-zinc-800">
+                        <div class="flex items-center space-x-3">
+                            <img src="${p.image}" class="w-10 h-10 object-cover rounded-lg">
+                            <div>
+                                <h5 class="font-bold text-xs text-white">${p.title}</h5>
+                                <span class="text-[10px] text-amber-400">R$ ${Number(p.price).toFixed(2)} - ${p.categoryLabel || p.category}</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="editMold('${p.id}')" class="bg-blue-500/15 hover:bg-blue-500 text-blue-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition-all" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteMold('${p.id}')" class="bg-red-500/15 hover:bg-red-500 text-red-400 hover:text-white px-3 py-1.5 rounded-lg text-xs transition-all" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.onload = function() {
+            initFirebaseListeners();
+        };
+    </script>
+</body>
+</html>
