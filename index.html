@@ -40,10 +40,6 @@
                     <i class="fa-solid fa-crown"></i>
                     <span id="vipBtnText">Área VIP</span>
                 </button>
-                <button onclick="openAdminLogin()" class="bg-zinc-800 hover:bg-zinc-700 text-amber-400 font-bold px-3.5 py-2.5 rounded-xl text-sm transition-colors border border-zinc-700 flex items-center space-x-1.5">
-                    <i class="fa-solid fa-lock text-xs"></i>
-                    <span>Admin</span>
-                </button>
             </div>
         </div>
     </header>
@@ -67,7 +63,7 @@
             </div>
         </section>
 
-        <!-- Cadastro VIP (Aparece após o pagamento do VIP) -->
+        <!-- Cadastro VIP (Aparece após o retorno do Mercado Pago) -->
         <section id="vipRegisterSection" class="hidden max-w-xl mx-auto bg-zinc-900 border border-amber-500/50 rounded-3xl p-8 mb-12 shadow-2xl">
             <div class="text-center mb-6">
                 <div class="bg-amber-500/10 text-amber-500 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl">
@@ -139,9 +135,9 @@
 
     </main>
 
-    <!-- Footer -->
+    <!-- Footer com Atalho Secreto Admin (Clique duplo no texto de copyright abre o painel) -->
     <footer class="bg-zinc-900 border-t border-zinc-800 py-8 mt-16 text-center text-xs text-zinc-500">
-        <p>&copy; 2026 Moto Molde Digital - Todos os direitos reservados.</p>
+        <p ondblclick="openAdminLogin()" class="cursor-pointer select-none">&copy; 2026 Moto Molde Digital - Todos os direitos reservados.</p>
     </footer>
 
     <!-- Modal Admin Login -->
@@ -263,6 +259,15 @@
         let vipUserName = localStorage.getItem("motomolde_vip_name") || "";
 
         function initFirebaseListeners() {
+            // Verifica se o usuário retornou do Mercado Pago com sucesso para o VIP
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get("vip_success") === "true") {
+                document.getElementById("catalogSection").classList.add("hidden");
+                document.getElementById("bannerVipSection").classList.add("hidden");
+                document.getElementById("vipRegisterSection").classList.remove("hidden");
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
             updateVipInterface();
             renderProducts();
             renderAdminProductsList();
@@ -444,15 +449,17 @@
             }
 
             if (targetUrl && targetUrl.startsWith("http")) {
-                window.open(targetUrl, '_blank');
+                // Se for VIP, adicionamos o parâmetro secreto de retorno para a página de cadastro
+                let finalRedirectUrl = targetUrl;
+                if (currentItemToBuy.type === 'vip') {
+                    const siteUrl = window.location.origin + window.location.pathname;
+                    finalRedirectUrl = targetUrl + (targetUrl.includes('?') ? '&' : '?') + 'back_url=' + encodeURIComponent(siteUrl + '?vip_success=true');
+                }
+
+                window.open(finalRedirectUrl, '_blank');
                 closePixModal();
 
-                if (currentItemToBuy.type === 'vip') {
-                    document.getElementById("catalogSection").classList.add("hidden");
-                    document.getElementById("bannerVipSection").classList.add("hidden");
-                    document.getElementById("vipRegisterSection").classList.remove("hidden");
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                } else if (currentItemToBuy.type === 'product') {
+                if (currentItemToBuy.type === 'product') {
                     const prod = products.find(p => p.id === currentItemToBuy.id);
                     if (prod && prod.downloadUrl) {
                         window.open(prod.downloadUrl, '_blank');
